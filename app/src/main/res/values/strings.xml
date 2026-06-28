@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LifeLog</string>
+    <string name="accessibility_service_label">LifeLog</string>
+    <string name="accessibility_service_description">Enhances screen event detection including device unlock tracking for your activity log.</string>
 </resources>
