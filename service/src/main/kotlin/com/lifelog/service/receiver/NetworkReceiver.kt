@@ -20,7 +20,10 @@ class NetworkReceiver(
 ) : BroadcastReceiver() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         when (intent.action) {
             ConnectivityManager.CONNECTIVITY_ACTION -> handleConnectivity(context)
             Intent.ACTION_AIRPLANE_MODE_CHANGED -> {

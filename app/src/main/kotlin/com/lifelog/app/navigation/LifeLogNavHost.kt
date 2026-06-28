@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -51,13 +50,14 @@ fun LifeLogNavHost(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val bottomNavItems = listOf(
-        MainNavItem(LifeLogRoutes.DASHBOARD, "Dashboard", com.lifelog.ui.components.bottomNavItems[0].icon),
-        MainNavItem(LifeLogRoutes.TIMELINE, "Timeline", com.lifelog.ui.components.bottomNavItems[1].icon),
-        MainNavItem(LifeLogRoutes.APPS, "Apps", com.lifelog.ui.components.bottomNavItems[2].icon),
-        MainNavItem(LifeLogRoutes.NOTIFICATIONS, "Alerts", com.lifelog.ui.components.bottomNavItems[3].icon),
-        MainNavItem(LifeLogRoutes.SETTINGS, "Settings", com.lifelog.ui.components.bottomNavItems[4].icon),
-    )
+    val bottomNavItems =
+        listOf(
+            MainNavItem(LifeLogRoutes.DASHBOARD, "Dashboard", com.lifelog.ui.components.bottomNavItems[0].icon),
+            MainNavItem(LifeLogRoutes.TIMELINE, "Timeline", com.lifelog.ui.components.bottomNavItems[1].icon),
+            MainNavItem(LifeLogRoutes.APPS, "Apps", com.lifelog.ui.components.bottomNavItems[2].icon),
+            MainNavItem(LifeLogRoutes.NOTIFICATIONS, "Alerts", com.lifelog.ui.components.bottomNavItems[3].icon),
+            MainNavItem(LifeLogRoutes.SETTINGS, "Settings", com.lifelog.ui.components.bottomNavItems[4].icon),
+        )
 
     val showBottomBar = currentRoute in bottomNavItems.map { it.route }
 

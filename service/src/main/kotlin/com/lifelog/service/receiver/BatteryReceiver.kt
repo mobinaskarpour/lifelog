@@ -22,7 +22,10 @@ class BatteryReceiver(
 ) : BroadcastReceiver() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         when (intent.action) {
             Intent.ACTION_BATTERY_CHANGED -> handleBatteryChanged(intent)
             Intent.ACTION_POWER_CONNECTED -> logPowerEvent("Power Connected", true)

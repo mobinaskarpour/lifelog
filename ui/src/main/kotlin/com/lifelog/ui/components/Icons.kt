@@ -71,10 +71,11 @@ data class BottomNavItem(
     val icon: ImageVector,
 )
 
-val bottomNavItems = listOf(
-    BottomNavItem("dashboard", "Dashboard", Icons.Filled.Dashboard),
-    BottomNavItem("timeline", "Timeline", Icons.Filled.History),
-    BottomNavItem("apps", "Apps", Icons.Filled.Apps),
-    BottomNavItem("notifications", "Alerts", Icons.Filled.Notifications),
-    BottomNavItem("settings", "Settings", Icons.Filled.Settings),
-)
+val bottomNavItems =
+    listOf(
+        BottomNavItem("dashboard", "Dashboard", Icons.Filled.Dashboard),
+        BottomNavItem("timeline", "Timeline", Icons.Filled.History),
+        BottomNavItem("apps", "Apps", Icons.Filled.Apps),
+        BottomNavItem("notifications", "Alerts", Icons.Filled.Notifications),
+        BottomNavItem("settings", "Settings", Icons.Filled.Settings),
+    )

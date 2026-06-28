@@ -26,7 +26,10 @@ class CallReceiver : BroadcastReceiver() {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         when (intent.action) {
             Intent.ACTION_NEW_OUTGOING_CALL -> {
                 val number = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER) ?: "Unknown"
