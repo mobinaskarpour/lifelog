@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.androidx.room.runtime)
     implementation(libs.gson)
     implementation(libs.itextpdf)
     implementation(libs.hilt.android)

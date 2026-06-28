@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.telephony.TelephonyManager
 import com.lifelog.domain.model.CallLog
 import com.lifelog.domain.model.CallType
 import com.lifelog.domain.model.TimelineEvent
@@ -17,7 +18,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
-import android.provider.CallLog as SystemCallLog
 
 @AndroidEntryPoint
 class CallReceiver : BroadcastReceiver() {
@@ -38,9 +38,9 @@ class CallReceiver : BroadcastReceiver() {
             }
             "android.intent.action.PHONE_STATE" -> {
                 val state = intent.getStringExtra("state")
-                val number = intent.getStringExtra(SystemCallLog.Calls.INCOMING_NUMBER) ?: "Unknown"
-                if (state == SystemCallLog.Calls.INCOMING_TYPE.toString() ||
-                    state == android.telephony.TelephonyManager.EXTRA_STATE_RINGING
+                val number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER) ?: "Unknown"
+                if (state == android.provider.CallLog.Calls.INCOMING_TYPE.toString() ||
+                    state == TelephonyManager.EXTRA_STATE_RINGING
                 ) {
                     logCall(CallType.INCOMING, number, 0)
                 }
