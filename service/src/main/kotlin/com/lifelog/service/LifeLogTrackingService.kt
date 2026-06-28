@@ -22,8 +22,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LifeLogTrackingService : Service() {
     @Inject lateinit var usageStatsTracker: UsageStatsTracker
+
     @Inject lateinit var batteryRepository: com.lifelog.domain.repository.BatteryRepository
+
     @Inject lateinit var timelineRepository: com.lifelog.domain.repository.TimelineRepository
+
     @Inject lateinit var locationTracker: LocationTracker
 
     private val serviceScope = CoroutineScope(Dispatchers.Default + Job())
@@ -45,7 +48,11 @@ class LifeLogTrackingService : Service() {
         Timber.d("LifeLog tracking service started")
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         return START_STICKY
     }
 
@@ -57,29 +64,32 @@ class LifeLogTrackingService : Service() {
         try {
             unregisterReceiver(batteryReceiver)
             unregisterReceiver(networkReceiver)
-        } catch (_: Exception) { }
+        } catch (_: Exception) {
+        }
         super.onDestroy()
         Timber.d("LifeLog tracking service stopped")
     }
 
     private fun startTracking() {
-        trackingJob = serviceScope.launch {
-            while (isActive) {
-                usageStatsTracker.trackUsage()
-                delay(TRACKING_INTERVAL_MS)
+        trackingJob =
+            serviceScope.launch {
+                while (isActive) {
+                    usageStatsTracker.trackUsage()
+                    delay(TRACKING_INTERVAL_MS)
+                }
             }
-        }
     }
 
     private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            "LifeLog Tracking",
-            NotificationManager.IMPORTANCE_LOW,
-        ).apply {
-            description = "Background activity tracking"
-            setShowBadge(false)
-        }
+        val channel =
+            NotificationChannel(
+                CHANNEL_ID,
+                "LifeLog Tracking",
+                NotificationManager.IMPORTANCE_LOW,
+            ).apply {
+                description = "Background activity tracking"
+                setShowBadge(false)
+            }
         val manager = getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(channel)
     }

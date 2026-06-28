@@ -11,7 +11,6 @@ import com.lifelog.domain.repository.ScreenEventRepository
 import com.lifelog.domain.repository.TimelineRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import java.util.Calendar
 
 class GetDashboardStatsUseCase(
@@ -47,13 +46,14 @@ class GetDashboardStatsUseCase(
     }
 
     private fun startOfDay(timestamp: Long): Long {
-        val cal = Calendar.getInstance().apply {
-            timeInMillis = timestamp
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
+        val cal =
+            Calendar.getInstance().apply {
+                timeInMillis = timestamp
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
         return cal.timeInMillis
     }
 
@@ -96,7 +96,9 @@ class CleanupOldLogsUseCase(
         batteryRepository.deleteOldBatteryLogs(cutoff)
         screenEventRepository.deleteOldScreenEvents(cutoff)
         val cal = java.util.Calendar.getInstance().apply { timeInMillis = cutoff }
-        val dateStr = "${cal.get(java.util.Calendar.YEAR)}-${cal.get(java.util.Calendar.MONTH) + 1}-${cal.get(java.util.Calendar.DAY_OF_MONTH)}"
+        val dateStr = "${cal.get(
+            java.util.Calendar.YEAR,
+        )}-${cal.get(java.util.Calendar.MONTH) + 1}-${cal.get(java.util.Calendar.DAY_OF_MONTH)}"
         appUsageRepository.deleteOldUsage(dateStr)
     }
 }

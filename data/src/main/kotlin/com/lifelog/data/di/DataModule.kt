@@ -33,16 +33,35 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
-    @Binds @Singleton abstract fun bindTimelineRepository(impl: TimelineRepositoryImpl): TimelineRepository
-    @Binds @Singleton abstract fun bindAppUsageRepository(impl: AppUsageRepositoryImpl): AppUsageRepository
-    @Binds @Singleton abstract fun bindNotificationRepository(impl: NotificationRepositoryImpl): NotificationRepository
-    @Binds @Singleton abstract fun bindCallRepository(impl: CallRepositoryImpl): CallRepository
-    @Binds @Singleton abstract fun bindLocationRepository(impl: LocationRepositoryImpl): LocationRepository
-    @Binds @Singleton abstract fun bindBatteryRepository(impl: BatteryRepositoryImpl): BatteryRepository
-    @Binds @Singleton abstract fun bindScreenEventRepository(impl: ScreenEventRepositoryImpl): ScreenEventRepository
-    @Binds @Singleton abstract fun bindSettingsRepository(impl: SettingsRepositoryImpl): SettingsRepository
-    @Binds @Singleton abstract fun bindDashboardRepository(impl: DashboardRepositoryImpl): DashboardRepository
-    @Binds @Singleton abstract fun bindExportRepository(impl: ExportRepositoryImpl): ExportRepository
+    @Binds @Singleton
+    abstract fun bindTimelineRepository(impl: TimelineRepositoryImpl): TimelineRepository
+
+    @Binds @Singleton
+    abstract fun bindAppUsageRepository(impl: AppUsageRepositoryImpl): AppUsageRepository
+
+    @Binds @Singleton
+    abstract fun bindNotificationRepository(impl: NotificationRepositoryImpl): NotificationRepository
+
+    @Binds @Singleton
+    abstract fun bindCallRepository(impl: CallRepositoryImpl): CallRepository
+
+    @Binds @Singleton
+    abstract fun bindLocationRepository(impl: LocationRepositoryImpl): LocationRepository
+
+    @Binds @Singleton
+    abstract fun bindBatteryRepository(impl: BatteryRepositoryImpl): BatteryRepository
+
+    @Binds @Singleton
+    abstract fun bindScreenEventRepository(impl: ScreenEventRepositoryImpl): ScreenEventRepository
+
+    @Binds @Singleton
+    abstract fun bindSettingsRepository(impl: SettingsRepositoryImpl): SettingsRepository
+
+    @Binds @Singleton
+    abstract fun bindDashboardRepository(impl: DashboardRepositoryImpl): DashboardRepository
+
+    @Binds @Singleton
+    abstract fun bindExportRepository(impl: ExportRepositoryImpl): ExportRepository
 }
 
 @Module
@@ -56,13 +75,15 @@ object UseCaseModule {
         screenEventRepository: ScreenEventRepository,
         batteryRepository: BatteryRepository,
     ) = GetDashboardStatsUseCase(
-        appUsageRepository, notificationRepository, callRepository,
-        screenEventRepository, batteryRepository,
+        appUsageRepository,
+        notificationRepository,
+        callRepository,
+        screenEventRepository,
+        batteryRepository,
     )
 
     @Provides @Singleton
-    fun provideSearchLogsUseCase(timelineRepository: TimelineRepository) =
-        SearchLogsUseCase(timelineRepository)
+    fun provideSearchLogsUseCase(timelineRepository: TimelineRepository) = SearchLogsUseCase(timelineRepository)
 
     @Provides @Singleton
     fun provideCleanupOldLogsUseCase(
@@ -74,7 +95,12 @@ object UseCaseModule {
         batteryRepository: BatteryRepository,
         screenEventRepository: ScreenEventRepository,
     ) = CleanupOldLogsUseCase(
-        timelineRepository, appUsageRepository, notificationRepository,
-        callRepository, locationRepository, batteryRepository, screenEventRepository,
+        timelineRepository,
+        appUsageRepository,
+        notificationRepository,
+        callRepository,
+        locationRepository,
+        batteryRepository,
+        screenEventRepository,
     )
 }

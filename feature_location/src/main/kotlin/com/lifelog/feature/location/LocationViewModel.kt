@@ -19,32 +19,35 @@ data class LocationUiState(
 )
 
 @HiltViewModel
-class LocationViewModel @Inject constructor(
-    private val locationRepository: LocationRepository,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(LocationUiState())
-    val uiState: StateFlow<LocationUiState> = _uiState.asStateFlow()
+class LocationViewModel
+    @Inject
+    constructor(
+        private val locationRepository: LocationRepository,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow(LocationUiState())
+        val uiState: StateFlow<LocationUiState> = _uiState.asStateFlow()
 
-    init {
-        loadLocations()
-    }
+        init {
+            loadLocations()
+        }
 
-    fun refresh() {
-        _uiState.value = _uiState.value.copy(isRefreshing = true)
-        loadLocations()
-    }
+        fun refresh() {
+            _uiState.value = _uiState.value.copy(isRefreshing = true)
+            loadLocations()
+        }
 
-    private fun loadLocations() {
-        viewModelScope.launch {
-            locationRepository.getAllLocations()
-                .catch { }
-                .collect { locations ->
-                    _uiState.value = LocationUiState(
-                        locations = locations,
-                        isLoading = false,
-                        isRefreshing = false,
-                    )
-                }
+        private fun loadLocations() {
+            viewModelScope.launch {
+                locationRepository.getAllLocations()
+                    .catch { }
+                    .collect { locations ->
+                        _uiState.value =
+                            LocationUiState(
+                                locations = locations,
+                                isLoading = false,
+                                isRefreshing = false,
+                            )
+                    }
+            }
         }
     }
-}

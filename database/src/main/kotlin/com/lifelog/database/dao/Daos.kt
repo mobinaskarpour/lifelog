@@ -19,9 +19,15 @@ interface TimelineEventDao {
     fun getAll(): Flow<List<TimelineEventEntity>>
 
     @Query("SELECT * FROM timeline_events WHERE timestamp >= :start AND timestamp < :end ORDER BY timestamp DESC")
-    fun getBetween(start: Long, end: Long): Flow<List<TimelineEventEntity>>
+    fun getBetween(
+        start: Long,
+        end: Long,
+    ): Flow<List<TimelineEventEntity>>
 
-    @Query("SELECT * FROM timeline_events WHERE title LIKE '%' || :keyword || '%' OR subtitle LIKE '%' || :keyword || '%' ORDER BY timestamp DESC")
+    @Query(
+        "SELECT * FROM timeline_events WHERE title LIKE '%' || :keyword || '%' " +
+            "OR subtitle LIKE '%' || :keyword || '%' ORDER BY timestamp DESC",
+    )
     fun search(keyword: String): Flow<List<TimelineEventEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -46,7 +52,10 @@ interface AppUsageDao {
     fun getForDate(date: String): Flow<List<AppUsageEntity>>
 
     @Query("SELECT * FROM app_usage WHERE date >= :startDate AND date <= :endDate ORDER BY totalDuration DESC")
-    fun getBetween(startDate: String, endDate: String): Flow<List<AppUsageEntity>>
+    fun getBetween(
+        startDate: String,
+        endDate: String,
+    ): Flow<List<AppUsageEntity>>
 
     @Query("SELECT * FROM app_usage ORDER BY totalDuration DESC LIMIT :limit")
     fun getTop(limit: Int): Flow<List<AppUsageEntity>>
@@ -67,12 +76,21 @@ interface NotificationLogDao {
     fun getAll(): Flow<List<NotificationLogEntity>>
 
     @Query("SELECT * FROM notification_logs WHERE timestamp >= :start AND timestamp < :end ORDER BY timestamp DESC")
-    fun getForDate(start: Long, end: Long): Flow<List<NotificationLogEntity>>
+    fun getForDate(
+        start: Long,
+        end: Long,
+    ): Flow<List<NotificationLogEntity>>
 
     @Query("SELECT COUNT(*) FROM notification_logs WHERE timestamp >= :start AND timestamp < :end")
-    fun getCountForDate(start: Long, end: Long): Flow<Int>
+    fun getCountForDate(
+        start: Long,
+        end: Long,
+    ): Flow<Int>
 
-    @Query("SELECT * FROM notification_logs WHERE title LIKE '%' || :keyword || '%' OR appName LIKE '%' || :keyword || '%' ORDER BY timestamp DESC")
+    @Query(
+        "SELECT * FROM notification_logs WHERE title LIKE '%' || :keyword || '%' " +
+            "OR appName LIKE '%' || :keyword || '%' ORDER BY timestamp DESC",
+    )
     fun search(keyword: String): Flow<List<NotificationLogEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -91,12 +109,21 @@ interface CallLogDao {
     fun getAll(): Flow<List<CallLogEntity>>
 
     @Query("SELECT * FROM call_logs WHERE timestamp >= :start AND timestamp < :end ORDER BY timestamp DESC")
-    fun getForDate(start: Long, end: Long): Flow<List<CallLogEntity>>
+    fun getForDate(
+        start: Long,
+        end: Long,
+    ): Flow<List<CallLogEntity>>
 
     @Query("SELECT COUNT(*) FROM call_logs WHERE timestamp >= :start AND timestamp < :end")
-    fun getCountForDate(start: Long, end: Long): Flow<Int>
+    fun getCountForDate(
+        start: Long,
+        end: Long,
+    ): Flow<Int>
 
-    @Query("SELECT * FROM call_logs WHERE phoneNumber LIKE '%' || :keyword || '%' OR contactName LIKE '%' || :keyword || '%' ORDER BY timestamp DESC")
+    @Query(
+        "SELECT * FROM call_logs WHERE phoneNumber LIKE '%' || :keyword || '%' " +
+            "OR contactName LIKE '%' || :keyword || '%' ORDER BY timestamp DESC",
+    )
     fun search(keyword: String): Flow<List<CallLogEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -115,7 +142,10 @@ interface LocationLogDao {
     fun getAll(): Flow<List<LocationLogEntity>>
 
     @Query("SELECT * FROM location_logs WHERE timestamp >= :start AND timestamp <= :end ORDER BY timestamp DESC")
-    fun getBetween(start: Long, end: Long): Flow<List<LocationLogEntity>>
+    fun getBetween(
+        start: Long,
+        end: Long,
+    ): Flow<List<LocationLogEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(location: LocationLogEntity): Long
@@ -151,7 +181,10 @@ interface ScreenEventDao {
     fun getAll(): Flow<List<ScreenEventEntity>>
 
     @Query("SELECT COUNT(*) FROM screen_events WHERE type = 'DEVICE_UNLOCK' AND timestamp >= :start AND timestamp < :end")
-    fun getUnlockCountForDate(start: Long, end: Long): Flow<Int>
+    fun getUnlockCountForDate(
+        start: Long,
+        end: Long,
+    ): Flow<Int>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(event: ScreenEventEntity): Long

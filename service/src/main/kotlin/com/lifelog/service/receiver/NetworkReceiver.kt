@@ -62,7 +62,10 @@ class NetworkReceiver(
         }
     }
 
-    private fun logNetworkEvent(type: TimelineEventType, title: String) {
+    private fun logNetworkEvent(
+        type: TimelineEventType,
+        title: String,
+    ) {
         scope.launch {
             try {
                 timelineRepository.insertEvent(
@@ -80,10 +83,11 @@ class NetworkReceiver(
     }
 
     companion object {
-        fun intentFilter(): IntentFilter = IntentFilter().apply {
-            addAction(ConnectivityManager.CONNECTIVITY_ACTION)
-            addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
-            addAction(android.bluetooth.BluetoothAdapter.ACTION_STATE_CHANGED)
-        }
+        fun intentFilter(): IntentFilter =
+            IntentFilter().apply {
+                addAction(ConnectivityManager.CONNECTIVITY_ACTION)
+                addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+                addAction(android.bluetooth.BluetoothAdapter.ACTION_STATE_CHANGED)
+            }
     }
 }

@@ -45,19 +45,21 @@ fun OnboardingScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.refresh()
+        val observer =
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    viewModel.refresh()
+                }
             }
-        }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(24.dp),
     ) {
         Text(
             text = "Welcome to LifeLog",
@@ -65,8 +67,9 @@ fun OnboardingScreen(
             fontWeight = FontWeight.Bold,
         )
         Text(
-            text = "Grant permissions to start tracking your phone activity. " +
-                "All data is stored locally on your device.",
+            text =
+                "Grant permissions to start tracking your phone activity. " +
+                    "All data is stored locally on your device.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
@@ -103,32 +106,37 @@ private fun PermissionCard(
     onGrant: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize(),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .animateContentSize(),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (permission.isGranted) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-            },
-        ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    if (permission.isGranted) {
+                        MaterialTheme.colorScheme.primaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    },
+            ),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = if (permission.isGranted) {
-                        Icons.Filled.CheckCircle
-                    } else {
-                        Icons.Filled.RadioButtonUnchecked
-                    },
+                    imageVector =
+                        if (permission.isGranted) {
+                            Icons.Filled.CheckCircle
+                        } else {
+                            Icons.Filled.RadioButtonUnchecked
+                        },
                     contentDescription = null,
-                    tint = if (permission.isGranted) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
+                    tint =
+                        if (permission.isGranted) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                     modifier = Modifier.size(24.dp),
                 )
                 Text(

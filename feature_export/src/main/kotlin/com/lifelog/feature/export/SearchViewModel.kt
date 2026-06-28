@@ -20,24 +20,27 @@ data class SearchUiState(
 )
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(
-    private val searchLogsUseCase: SearchLogsUseCase,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(SearchUiState())
-    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
+class SearchViewModel
+    @Inject
+    constructor(
+        private val searchLogsUseCase: SearchLogsUseCase,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow(SearchUiState())
+        val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
-    fun search(query: String) {
-        _uiState.value = _uiState.value.copy(query = query, isLoading = true)
-        viewModelScope.launch {
-            searchLogsUseCase(SearchFilter(keyword = query))
-                .catch { _uiState.value = _uiState.value.copy(isLoading = false) }
-                .collect { results ->
-                    _uiState.value = SearchUiState(
-                        results = results,
-                        query = query,
-                        isLoading = false,
-                    )
-                }
+        fun search(query: String) {
+            _uiState.value = _uiState.value.copy(query = query, isLoading = true)
+            viewModelScope.launch {
+                searchLogsUseCase(SearchFilter(keyword = query))
+                    .catch { _uiState.value = _uiState.value.copy(isLoading = false) }
+                    .collect { results ->
+                        _uiState.value =
+                            SearchUiState(
+                                results = results,
+                                query = query,
+                                isLoading = false,
+                            )
+                    }
+            }
         }
     }
-}

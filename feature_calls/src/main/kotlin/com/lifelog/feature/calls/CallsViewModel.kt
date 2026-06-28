@@ -20,42 +20,46 @@ data class CallsUiState(
 )
 
 @HiltViewModel
-class CallsViewModel @Inject constructor(
-    private val callRepository: CallRepository,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(CallsUiState())
-    val uiState: StateFlow<CallsUiState> = _uiState.asStateFlow()
+class CallsViewModel
+    @Inject
+    constructor(
+        private val callRepository: CallRepository,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow(CallsUiState())
+        val uiState: StateFlow<CallsUiState> = _uiState.asStateFlow()
 
-    init {
-        loadCalls()
-    }
+        init {
+            loadCalls()
+        }
 
-    fun refresh() {
-        _uiState.value = _uiState.value.copy(isRefreshing = true)
-        loadCalls()
-    }
+        fun refresh() {
+            _uiState.value = _uiState.value.copy(isRefreshing = true)
+            loadCalls()
+        }
 
-    fun onSearchQueryChange(query: String) {
-        _uiState.value = _uiState.value.copy(searchQuery = query)
-        loadCalls()
-    }
+        fun onSearchQueryChange(query: String) {
+            _uiState.value = _uiState.value.copy(searchQuery = query)
+            loadCalls()
+        }
 
-    private fun loadCalls() {
-        viewModelScope.launch {
-            val flow = if (_uiState.value.searchQuery.isNotBlank()) {
-                callRepository.searchCalls(_uiState.value.searchQuery)
-            } else {
-                callRepository.getAllCalls()
+        private fun loadCalls() {
+            viewModelScope.launch {
+                val flow =
+                    if (_uiState.value.searchQuery.isNotBlank()) {
+                        callRepository.searchCalls(_uiState.value.searchQuery)
+                    } else {
+                        callRepository.getAllCalls()
+                    }
+                flow.catch { }
+                    .collect { calls ->
+                        _uiState.value =
+                            CallsUiState(
+                                calls = calls,
+                                isLoading = false,
+                                isRefreshing = false,
+                                searchQuery = _uiState.value.searchQuery,
+                            )
+                    }
             }
-            flow.catch { }
-                .collect { calls ->
-                    _uiState.value = CallsUiState(
-                        calls = calls,
-                        isLoading = false,
-                        isRefreshing = false,
-                        searchQuery = _uiState.value.searchQuery,
-                    )
-                }
         }
     }
-}

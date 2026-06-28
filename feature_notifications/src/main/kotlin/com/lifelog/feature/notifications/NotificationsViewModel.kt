@@ -20,42 +20,46 @@ data class NotificationsUiState(
 )
 
 @HiltViewModel
-class NotificationsViewModel @Inject constructor(
-    private val notificationRepository: NotificationRepository,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(NotificationsUiState())
-    val uiState: StateFlow<NotificationsUiState> = _uiState.asStateFlow()
+class NotificationsViewModel
+    @Inject
+    constructor(
+        private val notificationRepository: NotificationRepository,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow(NotificationsUiState())
+        val uiState: StateFlow<NotificationsUiState> = _uiState.asStateFlow()
 
-    init {
-        loadNotifications()
-    }
+        init {
+            loadNotifications()
+        }
 
-    fun refresh() {
-        _uiState.value = _uiState.value.copy(isRefreshing = true)
-        loadNotifications()
-    }
+        fun refresh() {
+            _uiState.value = _uiState.value.copy(isRefreshing = true)
+            loadNotifications()
+        }
 
-    fun onSearchQueryChange(query: String) {
-        _uiState.value = _uiState.value.copy(searchQuery = query)
-        loadNotifications()
-    }
+        fun onSearchQueryChange(query: String) {
+            _uiState.value = _uiState.value.copy(searchQuery = query)
+            loadNotifications()
+        }
 
-    private fun loadNotifications() {
-        viewModelScope.launch {
-            val flow = if (_uiState.value.searchQuery.isNotBlank()) {
-                notificationRepository.searchNotifications(_uiState.value.searchQuery)
-            } else {
-                notificationRepository.getAllNotifications()
+        private fun loadNotifications() {
+            viewModelScope.launch {
+                val flow =
+                    if (_uiState.value.searchQuery.isNotBlank()) {
+                        notificationRepository.searchNotifications(_uiState.value.searchQuery)
+                    } else {
+                        notificationRepository.getAllNotifications()
+                    }
+                flow.catch { }
+                    .collect { notifications ->
+                        _uiState.value =
+                            NotificationsUiState(
+                                notifications = notifications,
+                                isLoading = false,
+                                isRefreshing = false,
+                                searchQuery = _uiState.value.searchQuery,
+                            )
+                    }
             }
-            flow.catch { }
-                .collect { notifications ->
-                    _uiState.value = NotificationsUiState(
-                        notifications = notifications,
-                        isLoading = false,
-                        isRefreshing = false,
-                        searchQuery = _uiState.value.searchQuery,
-                    )
-                }
         }
     }
-}

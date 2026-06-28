@@ -19,6 +19,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LifeLogNotificationListener : NotificationListenerService() {
     @Inject lateinit var notificationRepository: NotificationRepository
+
     @Inject lateinit var timelineRepository: TimelineRepository
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

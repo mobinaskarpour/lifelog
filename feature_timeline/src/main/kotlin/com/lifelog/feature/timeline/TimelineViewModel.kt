@@ -20,42 +20,46 @@ data class TimelineUiState(
 )
 
 @HiltViewModel
-class TimelineViewModel @Inject constructor(
-    private val timelineRepository: TimelineRepository,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(TimelineUiState())
-    val uiState: StateFlow<TimelineUiState> = _uiState.asStateFlow()
+class TimelineViewModel
+    @Inject
+    constructor(
+        private val timelineRepository: TimelineRepository,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow(TimelineUiState())
+        val uiState: StateFlow<TimelineUiState> = _uiState.asStateFlow()
 
-    init {
-        loadEvents()
-    }
+        init {
+            loadEvents()
+        }
 
-    fun refresh() {
-        _uiState.value = _uiState.value.copy(isRefreshing = true)
-        loadEvents()
-    }
+        fun refresh() {
+            _uiState.value = _uiState.value.copy(isRefreshing = true)
+            loadEvents()
+        }
 
-    fun onSearchQueryChange(query: String) {
-        _uiState.value = _uiState.value.copy(searchQuery = query)
-        loadEvents()
-    }
+        fun onSearchQueryChange(query: String) {
+            _uiState.value = _uiState.value.copy(searchQuery = query)
+            loadEvents()
+        }
 
-    private fun loadEvents() {
-        viewModelScope.launch {
-            val flow = if (_uiState.value.searchQuery.isNotBlank()) {
-                timelineRepository.searchEvents(_uiState.value.searchQuery)
-            } else {
-                timelineRepository.getAllEvents()
+        private fun loadEvents() {
+            viewModelScope.launch {
+                val flow =
+                    if (_uiState.value.searchQuery.isNotBlank()) {
+                        timelineRepository.searchEvents(_uiState.value.searchQuery)
+                    } else {
+                        timelineRepository.getAllEvents()
+                    }
+                flow.catch { }
+                    .collect { events ->
+                        _uiState.value =
+                            TimelineUiState(
+                                events = events,
+                                isLoading = false,
+                                isRefreshing = false,
+                                searchQuery = _uiState.value.searchQuery,
+                            )
+                    }
             }
-            flow.catch { }
-                .collect { events ->
-                    _uiState.value = TimelineUiState(
-                        events = events,
-                        isLoading = false,
-                        isRefreshing = false,
-                        searchQuery = _uiState.value.searchQuery,
-                    )
-                }
         }
     }
-}

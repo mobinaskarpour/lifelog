@@ -5,9 +5,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
     fun getSettings(): Flow<AppSettings>
+
     suspend fun updateSettings(settings: AppSettings)
+
     suspend fun updateTheme(themeMode: com.lifelog.domain.model.ThemeMode)
+
     suspend fun updateLanguage(language: com.lifelog.domain.model.Language)
+
     suspend fun setOnboardingCompleted(completed: Boolean)
 }
 
@@ -17,8 +21,12 @@ interface DashboardRepository {
 
 interface ExportRepository {
     suspend fun exportToCsv(): String
+
     suspend fun exportToJson(): String
+
     suspend fun exportToPdf(outputPath: String): Boolean
+
     suspend fun backupDatabase(outputPath: String): Boolean
+
     suspend fun restoreDatabase(inputPath: String): Boolean
 }

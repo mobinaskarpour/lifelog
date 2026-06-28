@@ -38,8 +38,9 @@ class BatteryReceiver(
         val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
         val batteryPct = if (level >= 0 && scale > 0) (level * 100 / scale) else 0
         val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-        val isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
-            status == BatteryManager.BATTERY_STATUS_FULL
+        val isCharging =
+            status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL
         val temperature = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) / 10f
 
         scope.launch {
@@ -69,7 +70,10 @@ class BatteryReceiver(
         }
     }
 
-    private fun logPowerEvent(title: String, connected: Boolean) {
+    private fun logPowerEvent(
+        title: String,
+        connected: Boolean,
+    ) {
         scope.launch {
             timelineRepository.insertEvent(
                 TimelineEvent(
@@ -84,10 +88,11 @@ class BatteryReceiver(
     }
 
     companion object {
-        fun intentFilter(): IntentFilter = IntentFilter().apply {
-            addAction(Intent.ACTION_BATTERY_CHANGED)
-            addAction(Intent.ACTION_POWER_CONNECTED)
-            addAction(Intent.ACTION_POWER_DISCONNECTED)
-        }
+        fun intentFilter(): IntentFilter =
+            IntentFilter().apply {
+                addAction(Intent.ACTION_BATTERY_CHANGED)
+                addAction(Intent.ACTION_POWER_CONNECTED)
+                addAction(Intent.ACTION_POWER_DISCONNECTED)
+            }
     }
 }

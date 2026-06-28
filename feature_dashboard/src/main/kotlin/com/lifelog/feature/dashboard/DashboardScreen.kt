@@ -107,10 +107,11 @@ fun DashboardScreen(
                 }
             }
             item {
-                val batteryText = buildString {
-                    append("${uiState.stats.batteryLevel}%")
-                    if (uiState.stats.isCharging) append(" ⚡")
-                }
+                val batteryText =
+                    buildString {
+                        append("${uiState.stats.batteryLevel}%")
+                        if (uiState.stats.isCharging) append(" ⚡")
+                    }
                 StatCard(
                     title = "Battery${if (uiState.stats.batteryTemperature > 0) " (${uiState.stats.batteryTemperature}°C)" else ""}",
                     value = batteryText,

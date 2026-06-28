@@ -17,7 +17,6 @@ import com.lifelog.ui.components.EmptyState
 import com.lifelog.ui.components.LoadingState
 import com.lifelog.ui.components.SearchBar
 import com.lifelog.ui.components.TimelineItem
-import com.lifelog.ui.components.timelineColor
 import com.lifelog.ui.components.timelineIcon
 import com.lifelog.utils.DateTimeUtils
 

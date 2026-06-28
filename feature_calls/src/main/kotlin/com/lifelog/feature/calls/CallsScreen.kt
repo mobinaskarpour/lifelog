@@ -61,13 +61,15 @@ fun CallsScreen(
             } else {
                 items(uiState.calls, key = { it.id }) { call ->
                     Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 4.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        ),
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            ),
                     ) {
                         Row(
                             modifier = Modifier.padding(16.dp),
@@ -80,9 +82,10 @@ fun CallsScreen(
                                 modifier = Modifier.size(32.dp),
                             )
                             androidx.compose.foundation.layout.Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = 12.dp),
+                                modifier =
+                                    Modifier
+                                        .weight(1f)
+                                        .padding(horizontal = 12.dp),
                             ) {
                                 Text(
                                     text = call.contactName ?: call.phoneNumber,
@@ -90,7 +93,9 @@ fun CallsScreen(
                                     fontWeight = FontWeight.SemiBold,
                                 )
                                 Text(
-                                    text = "${call.type.name.lowercase().replaceFirstChar { it.uppercase() }} · ${DateTimeUtils.formatDuration(call.duration)}",
+                                    text =
+                                        "${call.type.name.lowercase().replaceFirstChar { it.uppercase() }} · " +
+                                            DateTimeUtils.formatDuration(call.duration),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )

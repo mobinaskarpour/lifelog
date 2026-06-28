@@ -4,7 +4,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class DateTimeUtilsTest {
-
     @Test
     fun formatDuration_hoursAndMinutes() {
         val result = DateTimeUtils.formatDuration(3_660_000)
@@ -25,10 +24,11 @@ class DateTimeUtilsTest {
 
     @Test
     fun startOfDay_returnsMidnight() {
-        val cal = java.util.Calendar.getInstance().apply {
-            set(2025, 5, 15, 14, 30, 45)
-            set(java.util.Calendar.MILLISECOND, 500)
-        }
+        val cal =
+            java.util.Calendar.getInstance().apply {
+                set(2025, 5, 15, 14, 30, 45)
+                set(java.util.Calendar.MILLISECOND, 500)
+            }
         val start = DateTimeUtils.startOfDay(cal.timeInMillis)
         val startCal = java.util.Calendar.getInstance().apply { timeInMillis = start }
         assertEquals(0, startCal.get(java.util.Calendar.HOUR_OF_DAY))

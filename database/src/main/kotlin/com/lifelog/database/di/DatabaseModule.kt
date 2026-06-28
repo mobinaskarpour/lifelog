@@ -22,7 +22,9 @@ import javax.inject.Singleton
 object DatabaseModule {
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): LifeLogDatabase {
+    fun provideDatabase(
+        @ApplicationContext context: Context,
+    ): LifeLogDatabase {
         return Room.databaseBuilder(
             context,
             LifeLogDatabase::class.java,
@@ -31,10 +33,16 @@ object DatabaseModule {
     }
 
     @Provides fun provideTimelineEventDao(db: LifeLogDatabase): TimelineEventDao = db.timelineEventDao()
+
     @Provides fun provideAppUsageDao(db: LifeLogDatabase): AppUsageDao = db.appUsageDao()
+
     @Provides fun provideNotificationLogDao(db: LifeLogDatabase): NotificationLogDao = db.notificationLogDao()
+
     @Provides fun provideCallLogDao(db: LifeLogDatabase): CallLogDao = db.callLogDao()
+
     @Provides fun provideLocationLogDao(db: LifeLogDatabase): LocationLogDao = db.locationLogDao()
+
     @Provides fun provideBatteryLogDao(db: LifeLogDatabase): BatteryLogDao = db.batteryLogDao()
+
     @Provides fun provideScreenEventDao(db: LifeLogDatabase): ScreenEventDao = db.screenEventDao()
 }

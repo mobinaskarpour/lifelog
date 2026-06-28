@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.provider.CallLog as SystemCallLog
 import com.lifelog.domain.model.CallLog
 import com.lifelog.domain.model.CallType
 import com.lifelog.domain.model.TimelineEvent
@@ -18,10 +17,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+import android.provider.CallLog as SystemCallLog
 
 @AndroidEntryPoint
 class CallReceiver : BroadcastReceiver() {
     @Inject lateinit var callRepository: CallRepository
+
     @Inject lateinit var timelineRepository: TimelineRepository
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -47,20 +48,26 @@ class CallReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun logCall(type: CallType, number: String, duration: Long) {
+    private fun logCall(
+        type: CallType,
+        number: String,
+        duration: Long,
+    ) {
         scope.launch {
             try {
                 val timestamp = System.currentTimeMillis()
-                val timelineType = when (type) {
-                    CallType.INCOMING -> TimelineEventType.INCOMING_CALL
-                    CallType.OUTGOING -> TimelineEventType.OUTGOING_CALL
-                    CallType.MISSED -> TimelineEventType.MISSED_CALL
-                }
-                val title = when (type) {
-                    CallType.INCOMING -> "Incoming Call"
-                    CallType.OUTGOING -> "Outgoing Call"
-                    CallType.MISSED -> "Missed Call"
-                }
+                val timelineType =
+                    when (type) {
+                        CallType.INCOMING -> TimelineEventType.INCOMING_CALL
+                        CallType.OUTGOING -> TimelineEventType.OUTGOING_CALL
+                        CallType.MISSED -> TimelineEventType.MISSED_CALL
+                    }
+                val title =
+                    when (type) {
+                        CallType.INCOMING -> "Incoming Call"
+                        CallType.OUTGOING -> "Outgoing Call"
+                        CallType.MISSED -> "Missed Call"
+                    }
                 callRepository.insertCall(
                     CallLog(
                         phoneNumber = number,
@@ -76,11 +83,12 @@ class CallReceiver : BroadcastReceiver() {
                         title = title,
                         subtitle = number,
                         timestamp = timestamp,
-                        colorArgb = when (type) {
-                            CallType.INCOMING -> 0xFF4CAF50
-                            CallType.OUTGOING -> 0xFF2196F3
-                            CallType.MISSED -> 0xFFF44336
-                        },
+                        colorArgb =
+                            when (type) {
+                                CallType.INCOMING -> 0xFF4CAF50
+                                CallType.OUTGOING -> 0xFF2196F3
+                                CallType.MISSED -> 0xFFF44336
+                            },
                     ),
                 )
             } catch (e: Exception) {
@@ -90,9 +98,10 @@ class CallReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        fun intentFilter(): IntentFilter = IntentFilter().apply {
-            addAction(Intent.ACTION_NEW_OUTGOING_CALL)
-            addAction("android.intent.action.PHONE_STATE")
-        }
+        fun intentFilter(): IntentFilter =
+            IntentFilter().apply {
+                addAction(Intent.ACTION_NEW_OUTGOING_CALL)
+                addAction("android.intent.action.PHONE_STATE")
+            }
     }
 }

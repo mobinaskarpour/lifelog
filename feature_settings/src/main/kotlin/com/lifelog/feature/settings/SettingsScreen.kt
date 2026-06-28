@@ -50,9 +50,10 @@ fun SettingsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
-    val exportDir = remember {
-        File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "lifelog").apply { mkdirs() }
-    }
+    val exportDir =
+        remember {
+            File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "lifelog").apply { mkdirs() }
+        }
 
     LaunchedEffect(uiState.message) {
         uiState.message?.let {
@@ -68,10 +69,11 @@ fun SettingsScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
         ) {
             SectionHeader("Appearance")
             SettingsCard {
@@ -116,27 +118,31 @@ fun SettingsScreen(
                 )
                 Button(
                     onClick = { viewModel.exportCsv(File(exportDir, "lifelog_export.csv").absolutePath) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                 ) { Text("Export CSV") }
                 Button(
                     onClick = { viewModel.exportJson(File(exportDir, "lifelog_export.json").absolutePath) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                 ) { Text("Export JSON") }
                 Button(
                     onClick = { viewModel.exportPdf(File(exportDir, "lifelog_export.pdf").absolutePath) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                 ) { Text("Export PDF") }
                 Button(
                     onClick = { viewModel.backupDatabase(File(exportDir, "lifelog_backup.db").absolutePath) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                 ) { Text("Backup Database") }
             }
 
@@ -144,9 +150,10 @@ fun SettingsScreen(
             SettingsCard {
                 Button(
                     onClick = onNavigateToAbout,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                 ) { Text("About LifeLog") }
                 InfoRow(label = "Version", value = "1.0.0")
             }
@@ -158,13 +165,15 @@ fun SettingsScreen(
 @Composable
 private fun SettingsCard(content: @Composable () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            ),
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             content()
@@ -179,9 +188,10 @@ private fun SettingsSwitch(
     onCheckedChange: (Boolean) -> Unit,
 ) {
     androidx.compose.foundation.layout.Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
     ) {
@@ -192,14 +202,18 @@ private fun SettingsSwitch(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ThemeDropdown(selected: ThemeMode, onSelected: (ThemeMode) -> Unit) {
+private fun ThemeDropdown(
+    selected: ThemeMode,
+    onSelected: (ThemeMode) -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
     ) {
         OutlinedTextField(
             value = selected.name.lowercase().replaceFirstChar { it.uppercase() },
@@ -207,15 +221,19 @@ private fun ThemeDropdown(selected: ThemeMode, onSelected: (ThemeMode) -> Unit) 
             readOnly = true,
             label = { Text("Theme") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             ThemeMode.entries.forEach { mode ->
                 DropdownMenuItem(
                     text = { Text(mode.name.lowercase().replaceFirstChar { it.uppercase() }) },
-                    onClick = { onSelected(mode); expanded = false },
+                    onClick = {
+                        onSelected(mode)
+                        expanded = false
+                    },
                 )
             }
         }
@@ -224,14 +242,18 @@ private fun ThemeDropdown(selected: ThemeMode, onSelected: (ThemeMode) -> Unit) 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LanguageDropdown(selected: Language, onSelected: (Language) -> Unit) {
+private fun LanguageDropdown(
+    selected: Language,
+    onSelected: (Language) -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
     ) {
         OutlinedTextField(
             value = selected.name.lowercase().replaceFirstChar { it.uppercase() },
@@ -239,15 +261,19 @@ private fun LanguageDropdown(selected: Language, onSelected: (Language) -> Unit)
             readOnly = true,
             label = { Text("Language") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             Language.entries.forEach { lang ->
                 DropdownMenuItem(
                     text = { Text(lang.name.lowercase().replaceFirstChar { it.uppercase() }) },
-                    onClick = { onSelected(lang); expanded = false },
+                    onClick = {
+                        onSelected(lang)
+                        expanded = false
+                    },
                 )
             }
         }
@@ -256,16 +282,20 @@ private fun LanguageDropdown(selected: Language, onSelected: (Language) -> Unit)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AutoDeleteDropdown(selected: Int, onSelected: (Int) -> Unit) {
+private fun AutoDeleteDropdown(
+    selected: Int,
+    onSelected: (Int) -> Unit,
+) {
     val options = listOf(0 to "Never", 7 to "7 days", 30 to "30 days", 90 to "90 days")
     var expanded by remember { mutableStateOf(false) }
     val label = options.find { it.first == selected }?.second ?: "Never"
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
     ) {
         OutlinedTextField(
             value = label,
@@ -273,15 +303,19 @@ private fun AutoDeleteDropdown(selected: Int, onSelected: (Int) -> Unit) {
             readOnly = true,
             label = { Text("Auto Delete Logs") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             options.forEach { (days, text) ->
                 DropdownMenuItem(
                     text = { Text(text) },
-                    onClick = { onSelected(days); expanded = false },
+                    onClick = {
+                        onSelected(days)
+                        expanded = false
+                    },
                 )
             }
         }
@@ -291,9 +325,10 @@ private fun AutoDeleteDropdown(selected: Int, onSelected: (Int) -> Unit) {
 @Composable
 fun AboutScreen(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(24.dp),
     ) {
         Text(
             text = "LifeLog",
@@ -307,9 +342,10 @@ fun AboutScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(top = 8.dp),
         )
         Text(
-            text = "LifeLog is a personal activity tracker that helps you understand " +
-                "how you use your phone. It records app usage, notifications, calls, " +
-                "screen events, battery status, and network changes — all stored locally on your device.",
+            text =
+                "LifeLog is a personal activity tracker that helps you understand " +
+                    "how you use your phone. It records app usage, notifications, calls, " +
+                    "screen events, battery status, and network changes — all stored locally on your device.",
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(top = 24.dp),
         )
@@ -325,9 +361,10 @@ fun AboutScreen(modifier: Modifier = Modifier) {
 @Composable
 fun StatisticsScreen(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(24.dp),
     ) {
         Text(
             text = "Statistics",
@@ -335,8 +372,9 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold,
         )
         Text(
-            text = "View detailed usage statistics across all tracked categories " +
-                "from the Dashboard, Apps, Timeline, and individual log screens.",
+            text =
+                "View detailed usage statistics across all tracked categories " +
+                    "from the Dashboard, Apps, Timeline, and individual log screens.",
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(top = 16.dp),
         )

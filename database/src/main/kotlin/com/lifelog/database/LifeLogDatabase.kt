@@ -32,11 +32,17 @@ import com.lifelog.database.entity.TimelineEventEntity
 )
 abstract class LifeLogDatabase : RoomDatabase() {
     abstract fun timelineEventDao(): TimelineEventDao
+
     abstract fun appUsageDao(): AppUsageDao
+
     abstract fun notificationLogDao(): NotificationLogDao
+
     abstract fun callLogDao(): CallLogDao
+
     abstract fun locationLogDao(): LocationLogDao
+
     abstract fun batteryLogDao(): BatteryLogDao
+
     abstract fun screenEventDao(): ScreenEventDao
 
     companion object {

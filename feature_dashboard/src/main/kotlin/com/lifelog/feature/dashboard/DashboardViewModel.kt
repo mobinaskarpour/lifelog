@@ -20,38 +20,42 @@ data class DashboardUiState(
 )
 
 @HiltViewModel
-class DashboardViewModel @Inject constructor(
-    private val dashboardRepository: DashboardRepository,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(DashboardUiState())
-    val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
+class DashboardViewModel
+    @Inject
+    constructor(
+        private val dashboardRepository: DashboardRepository,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow(DashboardUiState())
+        val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
-    init {
-        loadStats()
-    }
+        init {
+            loadStats()
+        }
 
-    fun refresh() {
-        _uiState.value = _uiState.value.copy(isRefreshing = true)
-        loadStats()
-    }
+        fun refresh() {
+            _uiState.value = _uiState.value.copy(isRefreshing = true)
+            loadStats()
+        }
 
-    private fun loadStats() {
-        viewModelScope.launch {
-            dashboardRepository.getDashboardStats()
-                .catch { e ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        isRefreshing = false,
-                        error = e.message,
-                    )
-                }
-                .collect { stats ->
-                    _uiState.value = DashboardUiState(
-                        stats = stats,
-                        isLoading = false,
-                        isRefreshing = false,
-                    )
-                }
+        private fun loadStats() {
+            viewModelScope.launch {
+                dashboardRepository.getDashboardStats()
+                    .catch { e ->
+                        _uiState.value =
+                            _uiState.value.copy(
+                                isLoading = false,
+                                isRefreshing = false,
+                                error = e.message,
+                            )
+                    }
+                    .collect { stats ->
+                        _uiState.value =
+                            DashboardUiState(
+                                stats = stats,
+                                isLoading = false,
+                                isRefreshing = false,
+                            )
+                    }
+            }
         }
     }
-}
