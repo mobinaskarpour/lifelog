@@ -47,18 +47,19 @@ class AppsViewModel
 
         private fun loadApps() {
             viewModelScope.launch {
+                val today = DateTimeUtils.formatDate(DateTimeUtils.startOfDay())
                 val flow =
                     when (_uiState.value.period) {
-                        ChartPeriod.DAILY -> appUsageRepository.getUsageForDate(DateTimeUtils.formatDate())
+                        ChartPeriod.DAILY -> appUsageRepository.getUsageForDate(today)
                         ChartPeriod.WEEKLY ->
                             appUsageRepository.getUsageBetween(
                                 DateTimeUtils.daysAgoDate(7),
-                                DateTimeUtils.formatDate(),
+                                today,
                             )
                         ChartPeriod.MONTHLY ->
                             appUsageRepository.getUsageBetween(
                                 DateTimeUtils.daysAgoDate(30),
-                                DateTimeUtils.formatDate(),
+                                today,
                             )
                     }
                 flow.catch { }

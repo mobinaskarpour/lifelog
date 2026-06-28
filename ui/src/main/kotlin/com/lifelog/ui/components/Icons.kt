@@ -1,6 +1,8 @@
 package com.lifelog.ui.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.PhoneCallback
+import androidx.compose.material.icons.automirrored.outlined.PhoneMissed
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.History
@@ -11,8 +13,6 @@ import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Phone
-import androidx.compose.material.icons.outlined.PhoneCallback
-import androidx.compose.material.icons.outlined.PhoneMissed
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.ScreenLockPortrait
 import androidx.compose.material.icons.outlined.Wifi
@@ -25,9 +25,9 @@ fun timelineIcon(type: TimelineEventType): ImageVector =
     when (type) {
         TimelineEventType.PHONE_UNLOCKED -> Icons.Outlined.LockOpen
         TimelineEventType.APP_OPENED, TimelineEventType.APP_CLOSED -> Icons.Filled.Apps
-        TimelineEventType.INCOMING_CALL -> Icons.Outlined.PhoneCallback
+        TimelineEventType.INCOMING_CALL -> Icons.AutoMirrored.Outlined.PhoneCallback
         TimelineEventType.OUTGOING_CALL -> Icons.Outlined.Phone
-        TimelineEventType.MISSED_CALL -> Icons.Outlined.PhoneMissed
+        TimelineEventType.MISSED_CALL -> Icons.AutoMirrored.Outlined.PhoneMissed
         TimelineEventType.CALL_ENDED -> Icons.Outlined.Call
         TimelineEventType.NOTIFICATION_RECEIVED -> Icons.Outlined.Notifications
         TimelineEventType.SCREEN_ON, TimelineEventType.SCREEN_OFF -> Icons.Outlined.ScreenLockPortrait
@@ -56,9 +56,9 @@ fun timelineColor(type: TimelineEventType): Color =
 
 fun callIcon(type: CallType): ImageVector =
     when (type) {
-        CallType.INCOMING -> Icons.Outlined.PhoneCallback
+        CallType.INCOMING -> Icons.AutoMirrored.Outlined.PhoneCallback
         CallType.OUTGOING -> Icons.Outlined.Phone
-        CallType.MISSED -> Icons.Outlined.PhoneMissed
+        CallType.MISSED -> Icons.AutoMirrored.Outlined.PhoneMissed
     }
 
 fun callColor(type: CallType): Color =
