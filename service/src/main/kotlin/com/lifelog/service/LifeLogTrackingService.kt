@@ -21,7 +21,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LifeLogTrackingService : Service() {
-
     @Inject lateinit var usageStatsTracker: UsageStatsTracker
     @Inject lateinit var batteryRepository: com.lifelog.domain.repository.BatteryRepository
     @Inject lateinit var timelineRepository: com.lifelog.domain.repository.TimelineRepository

@@ -22,7 +22,6 @@ class PermissionsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(PermissionsUiState())
     val uiState: StateFlow<PermissionsUiState> = _uiState.asStateFlow()
 

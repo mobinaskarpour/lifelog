@@ -23,7 +23,6 @@ data class SearchUiState(
 class SearchViewModel @Inject constructor(
     private val searchLogsUseCase: SearchLogsUseCase,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 

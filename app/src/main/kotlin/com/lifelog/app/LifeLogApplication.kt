@@ -10,7 +10,6 @@ import javax.inject.Inject
 
 @HiltAndroidApp
 class LifeLogApplication : Application(), Configuration.Provider {
-
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
     override val workManagerConfiguration: Configuration

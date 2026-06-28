@@ -26,7 +26,6 @@ data class AppsUiState(
 class AppsViewModel @Inject constructor(
     private val appUsageRepository: AppUsageRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(AppsUiState())
     val uiState: StateFlow<AppsUiState> = _uiState.asStateFlow()
 

@@ -23,7 +23,6 @@ data class CallsUiState(
 class CallsViewModel @Inject constructor(
     private val callRepository: CallRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(CallsUiState())
     val uiState: StateFlow<CallsUiState> = _uiState.asStateFlow()
 

@@ -23,7 +23,6 @@ data class DashboardUiState(
 class DashboardViewModel @Inject constructor(
     private val dashboardRepository: DashboardRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 

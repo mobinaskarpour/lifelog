@@ -16,7 +16,6 @@ data class PermissionItem(
 )
 
 object PermissionHelper {
-
     fun getPermissionItems(context: Context): List<PermissionItem> = listOf(
         PermissionItem(
             id = "usage",

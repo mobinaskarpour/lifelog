@@ -21,7 +21,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CallReceiver : BroadcastReceiver() {
-
     @Inject lateinit var callRepository: CallRepository
     @Inject lateinit var timelineRepository: TimelineRepository
 

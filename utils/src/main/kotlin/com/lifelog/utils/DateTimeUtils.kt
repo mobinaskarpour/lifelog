@@ -7,7 +7,6 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 object DateTimeUtils {
-
     private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     private val dateTimeFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

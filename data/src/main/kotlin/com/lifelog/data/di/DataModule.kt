@@ -33,7 +33,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
-
     @Binds @Singleton abstract fun bindTimelineRepository(impl: TimelineRepositoryImpl): TimelineRepository
     @Binds @Singleton abstract fun bindAppUsageRepository(impl: AppUsageRepositoryImpl): AppUsageRepository
     @Binds @Singleton abstract fun bindNotificationRepository(impl: NotificationRepositoryImpl): NotificationRepository
@@ -49,7 +48,6 @@ abstract class RepositoryModule {
 @Module
 @InstallIn(SingletonComponent::class)
 object UseCaseModule {
-
     @Provides @Singleton
     fun provideGetDashboardStatsUseCase(
         appUsageRepository: AppUsageRepository,

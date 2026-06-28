@@ -23,7 +23,6 @@ data class TimelineUiState(
 class TimelineViewModel @Inject constructor(
     private val timelineRepository: TimelineRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(TimelineUiState())
     val uiState: StateFlow<TimelineUiState> = _uiState.asStateFlow()
 

@@ -23,7 +23,6 @@ data class NotificationsUiState(
 class NotificationsViewModel @Inject constructor(
     private val notificationRepository: NotificationRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(NotificationsUiState())
     val uiState: StateFlow<NotificationsUiState> = _uiState.asStateFlow()
 

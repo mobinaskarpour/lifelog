@@ -53,7 +53,6 @@ class TimelineRepositoryImpl @Inject constructor(
     private val dao: TimelineEventDao,
     private val dispatchers: DispatcherProvider,
 ) : TimelineRepository {
-
     override fun getAllEvents(): Flow<List<TimelineEvent>> =
         dao.getAll().map { list -> list.map { it.toDomain() } }
 
@@ -86,7 +85,6 @@ class AppUsageRepositoryImpl @Inject constructor(
     private val dao: AppUsageDao,
     private val dispatchers: DispatcherProvider,
 ) : AppUsageRepository {
-
     override fun getAllUsage(): Flow<List<AppUsage>> =
         dao.getAll().map { list -> list.map { it.toDomain() } }
 
@@ -113,7 +111,6 @@ class NotificationRepositoryImpl @Inject constructor(
     private val dao: NotificationLogDao,
     private val dispatchers: DispatcherProvider,
 ) : NotificationRepository {
-
     override fun getAllNotifications(): Flow<List<NotificationLog>> =
         dao.getAll().map { list -> list.map { it.toDomain() } }
 
@@ -142,7 +139,6 @@ class CallRepositoryImpl @Inject constructor(
     private val dao: CallLogDao,
     private val dispatchers: DispatcherProvider,
 ) : CallRepository {
-
     override fun getAllCalls(): Flow<List<CallLog>> =
         dao.getAll().map { list -> list.map { it.toDomain() } }
 
@@ -171,7 +167,6 @@ class LocationRepositoryImpl @Inject constructor(
     private val dao: LocationLogDao,
     private val dispatchers: DispatcherProvider,
 ) : LocationRepository {
-
     override fun getAllLocations(): Flow<List<LocationLog>> =
         dao.getAll().map { list -> list.map { it.toDomain() } }
 
@@ -190,7 +185,6 @@ class BatteryRepositoryImpl @Inject constructor(
     private val dao: BatteryLogDao,
     private val dispatchers: DispatcherProvider,
 ) : BatteryRepository {
-
     override fun getAllBatteryLogs(): Flow<List<BatteryLog>> =
         dao.getAll().map { list -> list.map { it.toDomain() } }
 
@@ -209,7 +203,6 @@ class ScreenEventRepositoryImpl @Inject constructor(
     private val dao: ScreenEventDao,
     private val dispatchers: DispatcherProvider,
 ) : ScreenEventRepository {
-
     override fun getAllScreenEvents(): Flow<List<ScreenEvent>> =
         dao.getAll().map { list -> list.map { it.toDomain() } }
 
@@ -230,7 +223,6 @@ class SettingsRepositoryImpl @Inject constructor(
     private val dataStore: SettingsDataStore,
     private val dispatchers: DispatcherProvider,
 ) : SettingsRepository {
-
     override fun getSettings(): Flow<AppSettings> = dataStore.settings
 
     override suspend fun updateSettings(settings: AppSettings) = withContext(dispatchers.io) {
@@ -260,7 +252,6 @@ class DashboardRepositoryImpl @Inject constructor(
     private val screenEventRepository: ScreenEventRepository,
     private val batteryRepository: BatteryRepository,
 ) : DashboardRepository {
-
     override fun getDashboardStats(): Flow<DashboardStats> {
         val today = DateTimeUtils.startOfDay()
         val dateStr = DateTimeUtils.formatDate(today)
@@ -291,7 +282,6 @@ class ExportRepositoryImpl @Inject constructor(
     private val database: LifeLogDatabase,
     private val dispatchers: DispatcherProvider,
 ) : ExportRepository {
-
     private val gson = Gson()
 
     override suspend fun exportToCsv(): String = withContext(dispatchers.io) {

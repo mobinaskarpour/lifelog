@@ -22,7 +22,6 @@ data class LocationUiState(
 class LocationViewModel @Inject constructor(
     private val locationRepository: LocationRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(LocationUiState())
     val uiState: StateFlow<LocationUiState> = _uiState.asStateFlow()
 

@@ -20,7 +20,6 @@ class BatteryReceiver(
     private val batteryRepository: BatteryRepository,
     private val timelineRepository: TimelineRepository,
 ) : BroadcastReceiver() {
-
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onReceive(context: Context, intent: Intent) {

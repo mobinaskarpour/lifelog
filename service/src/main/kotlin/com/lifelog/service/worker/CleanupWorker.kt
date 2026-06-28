@@ -23,7 +23,6 @@ class CleanupWorker @AssistedInject constructor(
     private val cleanupOldLogsUseCase: CleanupOldLogsUseCase,
     private val settingsRepository: SettingsRepository,
 ) : CoroutineWorker(context, params) {
-
     override suspend fun doWork(): Result {
         val settings = settingsRepository.getSettings().first()
         if (settings.autoDeleteDays > 0) {
