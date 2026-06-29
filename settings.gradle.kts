@@ -26,6 +26,7 @@ include(
     ":feature_apps",
     ":feature_calls",
     ":feature_notifications",
+    ":feature_sms",
     ":feature_location",
     ":feature_settings",
     ":feature_permissions",

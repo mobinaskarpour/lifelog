@@ -6,6 +6,7 @@ import com.lifelog.database.entity.CallLogEntity
 import com.lifelog.database.entity.LocationLogEntity
 import com.lifelog.database.entity.NotificationLogEntity
 import com.lifelog.database.entity.ScreenEventEntity
+import com.lifelog.database.entity.SmsLogEntity
 import com.lifelog.database.entity.TimelineEventEntity
 import com.lifelog.domain.model.AppUsage
 import com.lifelog.domain.model.BatteryLog
@@ -15,19 +16,35 @@ import com.lifelog.domain.model.LocationLog
 import com.lifelog.domain.model.NotificationLog
 import com.lifelog.domain.model.ScreenEvent
 import com.lifelog.domain.model.ScreenEventType
+import com.lifelog.domain.model.SmsMessage
+import com.lifelog.domain.model.SmsMessageType
 import com.lifelog.domain.model.TimelineEvent
 import com.lifelog.domain.model.TimelineEventType
 
-fun TimelineEventEntity.toDomain() =
-    TimelineEvent(
+fun TimelineEventEntity.toDomainOrNull(): TimelineEvent? {
+    val eventType = TimelineEventType.fromString(type) ?: return null
+    return TimelineEvent(
         id = id,
-        type = TimelineEventType.valueOf(type),
-        title = title,
+        type = eventType,
+        title = title.ifBlank { "Unknown event" },
         subtitle = subtitle,
-        timestamp = timestamp,
-        packageName = packageName,
-        colorArgb = colorArgb,
+        timestamp = timestamp.coerceAtLeast(0L),
+        packageName = packageName?.takeIf { it.isNotBlank() },
+        colorArgb = colorArgb.coerceIn(0L, 0xFFFFFFFFL).takeIf { it != 0L } ?: 0xFF6200EE,
     )
+}
+
+fun TimelineEventEntity.toDomain(): TimelineEvent =
+    toDomainOrNull()
+        ?: TimelineEvent(
+            id = id,
+            type = TimelineEventType.PHONE_UNLOCKED,
+            title = title.ifBlank { "Unknown event" },
+            subtitle = subtitle,
+            timestamp = timestamp.coerceAtLeast(0L),
+            packageName = packageName,
+            colorArgb = 0xFF6200EE,
+        )
 
 fun TimelineEvent.toEntity() =
     TimelineEventEntity(
@@ -46,6 +63,7 @@ fun AppUsageEntity.toDomain() =
         appName = appName,
         packageName = packageName,
         firstOpen = firstOpen,
+        lastOpen = lastOpen,
         lastClose = lastClose,
         totalDuration = totalDuration,
         launchCount = launchCount,
@@ -58,6 +76,7 @@ fun AppUsage.toEntity() =
         appName = appName,
         packageName = packageName,
         firstOpen = firstOpen,
+        lastOpen = lastOpen,
         lastClose = lastClose,
         totalDuration = totalDuration,
         launchCount = launchCount,
@@ -70,7 +89,13 @@ fun NotificationLogEntity.toDomain() =
         appName = appName,
         packageName = packageName,
         title = title,
+        text = text,
+        subtext = subtext,
+        bigText = bigText,
+        notificationId = notificationId,
+        conversationName = conversationName,
         timestamp = timestamp,
+        updatedAt = updatedAt,
     )
 
 fun NotificationLog.toEntity() =
@@ -79,7 +104,13 @@ fun NotificationLog.toEntity() =
         appName = appName,
         packageName = packageName,
         title = title,
+        text = text,
+        subtext = subtext,
+        bigText = bigText,
+        notificationId = notificationId,
+        conversationName = conversationName,
         timestamp = timestamp,
+        updatedAt = updatedAt,
     )
 
 fun CallLogEntity.toDomain() =
@@ -153,3 +184,52 @@ fun ScreenEvent.toEntity() =
         type = type.name,
         timestamp = timestamp,
     )
+
+fun SmsLogEntity.toDomain() =
+    SmsMessage(
+        id = id,
+        providerId = providerId,
+        threadId = threadId,
+        address = address,
+        contactName = contactName,
+        body = body,
+        date = date,
+        dateSent = dateSent,
+        type = SmsMessageType.fromAndroidType(type),
+        read = read,
+        seen = seen,
+        status = status,
+        subscriptionId = subscriptionId,
+        serviceCenter = serviceCenter,
+        person = person,
+    )
+
+fun SmsMessage.toEntity() =
+    SmsLogEntity(
+        id = id,
+        providerId = providerId,
+        threadId = threadId,
+        address = address,
+        contactName = contactName,
+        body = body,
+        date = date,
+        dateSent = dateSent,
+        type = type.toAndroidType(),
+        read = read,
+        seen = seen,
+        status = status,
+        subscriptionId = subscriptionId,
+        serviceCenter = serviceCenter,
+        person = person,
+    )
+
+private fun SmsMessageType.toAndroidType(): Int =
+    when (this) {
+        SmsMessageType.INBOX -> 1
+        SmsMessageType.SENT -> 2
+        SmsMessageType.DRAFT -> 3
+        SmsMessageType.OUTBOX -> 4
+        SmsMessageType.FAILED -> 5
+        SmsMessageType.QUEUED -> 6
+        SmsMessageType.UNKNOWN -> 0
+    }

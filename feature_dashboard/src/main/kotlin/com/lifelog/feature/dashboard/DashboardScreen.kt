@@ -13,6 +13,8 @@ import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.RadioButtonChecked
+import androidx.compose.material.icons.filled.StopCircle
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,6 +60,39 @@ fun DashboardScreen(
                     text = "Today's Overview",
                     style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier.padding(bottom = 8.dp),
+                )
+            }
+            item {
+                val monitoringTitle = if (uiState.isMonitoring) "Monitoring: Active" else "Monitoring: Stopped"
+                val monitoringValue =
+                    if (uiState.isMonitoring) {
+                        buildString {
+                            if (uiState.monitoringStartedAt > 0) {
+                                append("Since ${DateTimeUtils.formatTime(uiState.monitoringStartedAt)}")
+                            } else {
+                                append("Running in background")
+                            }
+                        }
+                    } else {
+                        "Background tracking is off"
+                    }
+                StatCard(
+                    title = monitoringTitle,
+                    value = monitoringValue,
+                    icon = if (uiState.isMonitoring) Icons.Filled.RadioButtonChecked else Icons.Filled.StopCircle,
+                    modifier = Modifier.fillMaxWidth(),
+                    containerColor =
+                        if (uiState.isMonitoring) {
+                            MaterialTheme.colorScheme.primaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.errorContainer
+                        },
+                    contentColor =
+                        if (uiState.isMonitoring) {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onErrorContainer
+                        },
                 )
             }
             item {

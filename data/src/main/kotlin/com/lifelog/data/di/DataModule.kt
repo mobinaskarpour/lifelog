@@ -9,6 +9,7 @@ import com.lifelog.data.repository.LocationRepositoryImpl
 import com.lifelog.data.repository.NotificationRepositoryImpl
 import com.lifelog.data.repository.ScreenEventRepositoryImpl
 import com.lifelog.data.repository.SettingsRepositoryImpl
+import com.lifelog.data.repository.SmsRepositoryImpl
 import com.lifelog.data.repository.TimelineRepositoryImpl
 import com.lifelog.domain.repository.AppUsageRepository
 import com.lifelog.domain.repository.BatteryRepository
@@ -19,6 +20,7 @@ import com.lifelog.domain.repository.LocationRepository
 import com.lifelog.domain.repository.NotificationRepository
 import com.lifelog.domain.repository.ScreenEventRepository
 import com.lifelog.domain.repository.SettingsRepository
+import com.lifelog.domain.repository.SmsRepository
 import com.lifelog.domain.repository.TimelineRepository
 import com.lifelog.domain.usecase.CleanupOldLogsUseCase
 import com.lifelog.domain.usecase.GetDashboardStatsUseCase
@@ -44,6 +46,9 @@ abstract class RepositoryModule {
 
     @Binds @Singleton
     abstract fun bindCallRepository(impl: CallRepositoryImpl): CallRepository
+
+    @Binds @Singleton
+    abstract fun bindSmsRepository(impl: SmsRepositoryImpl): SmsRepository
 
     @Binds @Singleton
     abstract fun bindLocationRepository(impl: LocationRepositoryImpl): LocationRepository
@@ -91,6 +96,7 @@ object UseCaseModule {
         appUsageRepository: AppUsageRepository,
         notificationRepository: NotificationRepository,
         callRepository: CallRepository,
+        smsRepository: SmsRepository,
         locationRepository: LocationRepository,
         batteryRepository: BatteryRepository,
         screenEventRepository: ScreenEventRepository,
@@ -99,6 +105,7 @@ object UseCaseModule {
         appUsageRepository,
         notificationRepository,
         callRepository,
+        smsRepository,
         locationRepository,
         batteryRepository,
         screenEventRepository,

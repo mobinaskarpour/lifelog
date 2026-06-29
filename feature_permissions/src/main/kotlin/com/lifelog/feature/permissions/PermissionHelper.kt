@@ -49,6 +49,12 @@ object PermissionHelper {
                 isGranted = hasPhonePermission(context),
             ),
             PermissionItem(
+                id = "sms",
+                title = "SMS",
+                description = "Required to import inbox, sent, draft, and outbox SMS from this device.",
+                isGranted = hasSmsPermission(context),
+            ),
+            PermissionItem(
                 id = "battery",
                 title = "Battery Optimization Exemption",
                 description = "Prevents the system from stopping background tracking to ensure continuous logging.",
@@ -70,6 +76,10 @@ object PermissionHelper {
                         data = Uri.fromParts("package", context.packageName, null)
                     }
                 "phone" ->
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                "sms" ->
                     Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                         data = Uri.fromParts("package", context.packageName, null)
                     }
@@ -123,6 +133,13 @@ object PermissionHelper {
         return ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.READ_PHONE_STATE,
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun hasSmsPermission(context: Context): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.READ_SMS,
         ) == android.content.pm.PackageManager.PERMISSION_GRANTED
     }
 

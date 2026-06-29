@@ -5,6 +5,7 @@ data class AppUsage(
     val appName: String,
     val packageName: String,
     val firstOpen: Long,
+    val lastOpen: Long,
     val lastClose: Long,
     val totalDuration: Long,
     val launchCount: Int,

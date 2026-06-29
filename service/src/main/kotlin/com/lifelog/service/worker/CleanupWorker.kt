@@ -11,6 +11,7 @@ import androidx.work.WorkerParameters
 import com.lifelog.domain.repository.SettingsRepository
 import com.lifelog.domain.usecase.CleanupOldLogsUseCase
 import com.lifelog.service.LifeLogTrackingService
+import com.lifelog.service.TrackingActions
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -48,9 +49,29 @@ class CleanupWorker
     }
 
 object ServiceStarter {
+    suspend fun startTrackingIfEnabled(
+        context: Context,
+        settingsRepository: SettingsRepository,
+    ) {
+        val settings = settingsRepository.getSettings().first()
+        if (!settings.monitoringEnabled) return
+        if (settings.monitoringStartedAt == 0L) {
+            settingsRepository.setMonitoringStartedAt(System.currentTimeMillis())
+        }
+        startTracking(context)
+    }
+
     fun startTracking(context: Context) {
         val intent = Intent(context, LifeLogTrackingService::class.java)
         context.startForegroundService(intent)
         CleanupWorker.schedule(context)
+    }
+
+    fun stopTracking(context: Context) {
+        val stopIntent =
+            Intent(context, LifeLogTrackingService::class.java).apply {
+                action = TrackingActions.ACTION_STOP_MONITORING
+            }
+        context.startService(stopIntent)
     }
 }

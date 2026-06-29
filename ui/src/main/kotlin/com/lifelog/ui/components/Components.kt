@@ -1,6 +1,7 @@
 package com.lifelog.ui.components
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,13 +25,115 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
+import com.lifelog.utils.AppUtils
+
+@Composable
+fun AppIcon(
+    packageName: String,
+    modifier: Modifier = Modifier,
+    size: Dp = 40.dp,
+) {
+    if (packageName.isBlank()) {
+        AppIconPlaceholder(modifier = modifier, size = size, label = "?")
+        return
+    }
+
+    val context = LocalContext.current
+    val pixelSize = size.value.toInt().coerceAtLeast(1)
+    val bitmap =
+        remember(packageName, pixelSize) {
+            runCatching {
+                AppUtils.getAppIcon(context, packageName)?.toBitmap(pixelSize, pixelSize)
+            }.getOrNull()
+        }
+    if (bitmap != null) {
+        Image(
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = null,
+            modifier = modifier.size(size).clip(RoundedCornerShape(12.dp)),
+        )
+    } else {
+        AppIconPlaceholder(
+            modifier = modifier,
+            size = size,
+            label = packageName.take(1).uppercase().ifBlank { "?" },
+        )
+    }
+}
+
+@Composable
+private fun AppIconPlaceholder(
+    modifier: Modifier,
+    size: Dp,
+    label: String,
+) {
+    Box(
+        modifier =
+            modifier
+                .size(size)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
+}
+
+@Composable
+fun SkeletonCard(modifier: Modifier = Modifier) {
+    Card(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp)
+                .height(88.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+            ),
+    ) {}
+}
+
+@Composable
+fun LinearUsageBar(
+    progress: Float,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(6.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth(progress.coerceIn(0f, 1f))
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(MaterialTheme.colorScheme.primary),
+        )
+    }
+}
 
 @Composable
 fun StatCard(

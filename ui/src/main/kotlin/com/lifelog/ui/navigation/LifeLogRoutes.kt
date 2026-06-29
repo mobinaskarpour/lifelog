@@ -8,6 +8,8 @@ object LifeLogRoutes {
     const val APPS = "apps"
     const val NOTIFICATIONS = "notifications"
     const val CALLS = "calls"
+    const val SMS = "sms"
+    const val SMS_CONVERSATION = "sms/{threadId}"
     const val LOCATION = "location"
     const val STATISTICS = "statistics"
     const val SETTINGS = "settings"

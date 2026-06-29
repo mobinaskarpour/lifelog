@@ -11,9 +11,15 @@ object DateTimeUtils {
     private val dateTimeFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-    fun formatTime(timestamp: Long): String = timeFormat.format(Date(timestamp))
+    fun formatTime(timestamp: Long): String =
+        runCatching {
+            timeFormat.format(Date(timestamp.coerceAtLeast(0L)))
+        }.getOrDefault("--:--")
 
-    fun formatDateTime(timestamp: Long): String = dateTimeFormat.format(Date(timestamp))
+    fun formatDateTime(timestamp: Long): String =
+        runCatching {
+            dateTimeFormat.format(Date(timestamp.coerceAtLeast(0L)))
+        }.getOrDefault("Unknown time")
 
     fun formatDate(timestamp: Long): String = dateFormat.format(Date(timestamp))
 
@@ -38,9 +44,10 @@ object DateTimeUtils {
     }
 
     fun formatDuration(millis: Long): String {
-        val hours = TimeUnit.MILLISECONDS.toHours(millis)
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60
+        val safeMillis = millis.coerceAtLeast(0L)
+        val hours = TimeUnit.MILLISECONDS.toHours(safeMillis)
+        val minutes = TimeUnit.MILLISECONDS.toMinutes(safeMillis) % 60
+        val seconds = TimeUnit.MILLISECONDS.toSeconds(safeMillis) % 60
         return when {
             hours > 0 -> String.format(Locale.getDefault(), "%dh %02dm", hours, minutes)
             minutes > 0 -> String.format(Locale.getDefault(), "%dm %02ds", minutes, seconds)
@@ -52,5 +59,18 @@ object DateTimeUtils {
         val cal = Calendar.getInstance()
         cal.add(Calendar.DAY_OF_YEAR, -days)
         return dateFormat.format(cal.time)
+    }
+
+    fun yesterdayDate(): String = daysAgoDate(1)
+
+    fun formatRelativeTime(timestamp: Long): String {
+        val now = System.currentTimeMillis()
+        val diff = now - timestamp
+        return when {
+            diff < 60_000 -> "Just now"
+            diff < 3_600_000 -> "${diff / 60_000}m ago"
+            diff < 86_400_000 -> formatTime(timestamp)
+            else -> formatDateTime(timestamp)
+        }
     }
 }

@@ -22,4 +22,7 @@ data class AppSettings(
     val locationIntervalMinutes: Int = 15,
     val notificationTrackingEnabled: Boolean = true,
     val onboardingCompleted: Boolean = false,
+    val monitoringEnabled: Boolean = true,
+    val monitoringStartedAt: Long = 0L,
+    val lastOpenedRoute: String = "dashboard",
 )

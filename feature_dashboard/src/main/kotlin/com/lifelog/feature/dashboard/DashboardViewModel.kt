@@ -4,16 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lifelog.domain.model.DashboardStats
 import com.lifelog.domain.repository.DashboardRepository
+import com.lifelog.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class DashboardUiState(
     val stats: DashboardStats = DashboardStats(),
+    val isMonitoring: Boolean = true,
+    val monitoringStartedAt: Long = 0L,
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
     val error: String? = null,
@@ -24,6 +28,7 @@ class DashboardViewModel
     @Inject
     constructor(
         private val dashboardRepository: DashboardRepository,
+        private val settingsRepository: SettingsRepository,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(DashboardUiState())
         val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
@@ -39,23 +44,27 @@ class DashboardViewModel
 
         private fun loadStats() {
             viewModelScope.launch {
-                dashboardRepository.getDashboardStats()
-                    .catch { e ->
-                        _uiState.value =
-                            _uiState.value.copy(
-                                isLoading = false,
-                                isRefreshing = false,
-                                error = e.message,
-                            )
-                    }
-                    .collect { stats ->
-                        _uiState.value =
-                            DashboardUiState(
-                                stats = stats,
-                                isLoading = false,
-                                isRefreshing = false,
-                            )
-                    }
+                combine(
+                    dashboardRepository.getDashboardStats(),
+                    settingsRepository.getSettings(),
+                ) { stats, settings ->
+                    DashboardUiState(
+                        stats = stats,
+                        isMonitoring = settings.monitoringEnabled,
+                        monitoringStartedAt = settings.monitoringStartedAt,
+                        isLoading = false,
+                        isRefreshing = false,
+                    )
+                }.catch { e ->
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isLoading = false,
+                            isRefreshing = false,
+                            error = e.message,
+                        )
+                }.collect { state ->
+                    _uiState.value = state
+                }
             }
         }
     }

@@ -45,6 +45,7 @@ import java.io.File
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     onNavigateToAbout: () -> Unit = {},
+    onNavigateToSms: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -144,6 +145,17 @@ fun SettingsScreen(
                             .fillMaxWidth()
                             .padding(8.dp),
                 ) { Text("Backup Database") }
+            }
+
+            SectionHeader("Messages")
+            SettingsCard {
+                Button(
+                    onClick = onNavigateToSms,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                ) { Text("SMS History") }
             }
 
             SectionHeader("About")

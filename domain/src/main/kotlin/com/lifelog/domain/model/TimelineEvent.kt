@@ -21,6 +21,17 @@ enum class TimelineEventType {
     AIRPLANE_MODE_ON,
     AIRPLANE_MODE_OFF,
     LOCATION_UPDATE,
+    WINDOW_CHANGED,
+    VIEW_CLICKED,
+    VIEW_SCROLLED,
+    ;
+
+    companion object {
+        fun fromString(value: String?): TimelineEventType? {
+            if (value.isNullOrBlank()) return null
+            return entries.firstOrNull { it.name == value }
+        }
+    }
 }
 
 data class TimelineEvent(

@@ -10,6 +10,7 @@ import com.lifelog.database.entity.CallLogEntity
 import com.lifelog.database.entity.LocationLogEntity
 import com.lifelog.database.entity.NotificationLogEntity
 import com.lifelog.database.entity.ScreenEventEntity
+import com.lifelog.database.entity.SmsLogEntity
 import com.lifelog.database.entity.TimelineEventEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -57,6 +58,34 @@ interface AppUsageDao {
         endDate: String,
     ): Flow<List<AppUsageEntity>>
 
+    @Query(
+        """
+        SELECT packageName,
+               MAX(appName) AS appName,
+               MIN(firstOpen) AS firstOpen,
+               MAX(lastOpen) AS lastOpen,
+               MAX(lastClose) AS lastClose,
+               SUM(totalDuration) AS totalDuration,
+               SUM(launchCount) AS launchCount,
+               MAX(date) AS date,
+               MIN(id) AS id
+        FROM app_usage
+        WHERE date >= :startDate AND date <= :endDate
+        GROUP BY packageName
+        ORDER BY totalDuration DESC
+        """,
+    )
+    fun getAggregatedBetween(
+        startDate: String,
+        endDate: String,
+    ): Flow<List<AppUsageEntity>>
+
+    @Query("SELECT * FROM app_usage WHERE packageName = :packageName AND date = :date LIMIT 1")
+    suspend fun getByPackageAndDate(
+        packageName: String,
+        date: String,
+    ): AppUsageEntity?
+
     @Query("SELECT * FROM app_usage ORDER BY totalDuration DESC LIMIT :limit")
     fun getTop(limit: Int): Flow<List<AppUsageEntity>>
 
@@ -89,9 +118,27 @@ interface NotificationLogDao {
 
     @Query(
         "SELECT * FROM notification_logs WHERE title LIKE '%' || :keyword || '%' " +
-            "OR appName LIKE '%' || :keyword || '%' ORDER BY timestamp DESC",
+            "OR appName LIKE '%' || :keyword || '%' " +
+            "OR text LIKE '%' || :keyword || '%' " +
+            "OR subtext LIKE '%' || :keyword || '%' " +
+            "OR bigText LIKE '%' || :keyword || '%' " +
+            "OR conversationName LIKE '%' || :keyword || '%' " +
+            "OR packageName LIKE '%' || :keyword || '%' ORDER BY timestamp DESC",
     )
     fun search(keyword: String): Flow<List<NotificationLogEntity>>
+
+    @Query(
+        "SELECT * FROM notification_logs WHERE packageName = :packageName ORDER BY timestamp DESC",
+    )
+    fun getByPackage(packageName: String): Flow<List<NotificationLogEntity>>
+
+    @Query(
+        "SELECT * FROM notification_logs WHERE packageName = :packageName AND notificationId = :notificationId LIMIT 1",
+    )
+    suspend fun findByPackageAndNotificationId(
+        packageName: String,
+        notificationId: Int,
+    ): NotificationLogEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(notification: NotificationLogEntity): Long
@@ -194,4 +241,41 @@ interface ScreenEventDao {
 
     @Query("SELECT * FROM screen_events")
     suspend fun getAllSync(): List<ScreenEventEntity>
+}
+
+@Dao
+interface SmsLogDao {
+    @Query("SELECT * FROM sms_logs ORDER BY date DESC")
+    fun getAll(): Flow<List<SmsLogEntity>>
+
+    @Query("SELECT * FROM sms_logs WHERE threadId = :threadId ORDER BY date ASC")
+    fun getForThread(threadId: Long): Flow<List<SmsLogEntity>>
+
+    @Query(
+        "SELECT * FROM sms_logs WHERE body LIKE '%' || :keyword || '%' " +
+            "OR address LIKE '%' || :keyword || '%' " +
+            "OR contactName LIKE '%' || :keyword || '%' ORDER BY date DESC",
+    )
+    fun search(keyword: String): Flow<List<SmsLogEntity>>
+
+    @Query("SELECT COUNT(*) FROM sms_logs WHERE type = :type")
+    suspend fun getCountByType(type: Int): Int
+
+    @Query("SELECT COUNT(*) FROM sms_logs WHERE type = :type")
+    fun observeCountByType(type: Int): Flow<Int>
+
+    @Query("SELECT * FROM sms_logs WHERE providerId = :providerId LIMIT 1")
+    suspend fun findByProviderId(providerId: Long): SmsLogEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(message: SmsLogEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(messages: List<SmsLogEntity>)
+
+    @Query("DELETE FROM sms_logs WHERE date < :before")
+    suspend fun deleteBefore(before: Long)
+
+    @Query("SELECT * FROM sms_logs")
+    suspend fun getAllSync(): List<SmsLogEntity>
 }

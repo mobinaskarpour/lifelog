@@ -33,6 +33,11 @@ interface AppUsageRepository {
         endDate: String,
     ): Flow<List<AppUsage>>
 
+    fun getAggregatedUsageBetween(
+        startDate: String,
+        endDate: String,
+    ): Flow<List<AppUsage>>
+
     fun getTopApps(limit: Int): Flow<List<AppUsage>>
 
     suspend fun insertOrUpdateUsage(usage: AppUsage)

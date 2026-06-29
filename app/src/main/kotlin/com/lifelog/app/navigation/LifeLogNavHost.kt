@@ -13,14 +13,17 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.lifelog.feature.apps.AppsScreen
 import com.lifelog.feature.calls.CallsScreen
 import com.lifelog.feature.dashboard.DashboardScreen
@@ -31,6 +34,8 @@ import com.lifelog.feature.permissions.OnboardingScreen
 import com.lifelog.feature.settings.AboutScreen
 import com.lifelog.feature.settings.SettingsScreen
 import com.lifelog.feature.settings.StatisticsScreen
+import com.lifelog.feature.sms.SmsConversationScreen
+import com.lifelog.feature.sms.SmsScreen
 import com.lifelog.feature.timeline.TimelineScreen
 import com.lifelog.ui.navigation.LifeLogRoutes
 
@@ -45,6 +50,9 @@ fun LifeLogNavHost(
     startDestination: String,
     onOnboardingComplete: () -> Unit,
     modifier: Modifier = Modifier,
+    pendingRoute: String? = null,
+    onRouteHandled: () -> Unit = {},
+    onSaveRoute: (String) -> Unit = {},
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -58,6 +66,30 @@ fun LifeLogNavHost(
             MainNavItem(LifeLogRoutes.NOTIFICATIONS, "Alerts", com.lifelog.ui.components.bottomNavItems[3].icon),
             MainNavItem(LifeLogRoutes.SETTINGS, "Settings", com.lifelog.ui.components.bottomNavItems[4].icon),
         )
+
+    val bottomNavRoutes = bottomNavItems.map { it.route }
+
+    LaunchedEffect(currentRoute) {
+        currentRoute?.let { route ->
+            if (route in bottomNavRoutes) {
+                onSaveRoute(route)
+            }
+        }
+    }
+
+    LaunchedEffect(pendingRoute) {
+        val route = pendingRoute ?: return@LaunchedEffect
+        if (route in bottomNavRoutes) {
+            navController.navigate(route) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
+        onRouteHandled()
+    }
 
     val showBottomBar = currentRoute in bottomNavItems.map { it.route }
 
@@ -119,11 +151,25 @@ fun LifeLogNavHost(
             composable(LifeLogRoutes.APPS) { AppsScreen() }
             composable(LifeLogRoutes.NOTIFICATIONS) { NotificationsScreen() }
             composable(LifeLogRoutes.CALLS) { CallsScreen() }
+            composable(LifeLogRoutes.SMS) {
+                SmsScreen(
+                    onThreadClick = { threadId ->
+                        navController.navigate("sms/$threadId")
+                    },
+                )
+            }
+            composable(
+                route = LifeLogRoutes.SMS_CONVERSATION,
+                arguments = listOf(navArgument("threadId") { type = NavType.LongType }),
+            ) {
+                SmsConversationScreen(onBack = { navController.popBackStack() })
+            }
             composable(LifeLogRoutes.LOCATION) { LocationScreen() }
             composable(LifeLogRoutes.STATISTICS) { StatisticsScreen() }
             composable(LifeLogRoutes.SETTINGS) {
                 SettingsScreen(
                     onNavigateToAbout = { navController.navigate(LifeLogRoutes.ABOUT) },
+                    onNavigateToSms = { navController.navigate(LifeLogRoutes.SMS) },
                 )
             }
             composable(LifeLogRoutes.ABOUT) { AboutScreen() }

@@ -13,6 +13,12 @@ interface SettingsRepository {
     suspend fun updateLanguage(language: com.lifelog.domain.model.Language)
 
     suspend fun setOnboardingCompleted(completed: Boolean)
+
+    suspend fun setMonitoringEnabled(enabled: Boolean)
+
+    suspend fun setMonitoringStartedAt(timestamp: Long)
+
+    suspend fun setLastOpenedRoute(route: String)
 }
 
 interface DashboardRepository {

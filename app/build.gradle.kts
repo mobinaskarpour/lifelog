@@ -69,6 +69,7 @@ dependencies {
     implementation(project(":feature_apps"))
     implementation(project(":feature_calls"))
     implementation(project(":feature_notifications"))
+    implementation(project(":feature_sms"))
     implementation(project(":feature_location"))
     implementation(project(":feature_settings"))
     implementation(project(":feature_permissions"))

@@ -6,6 +6,7 @@ import com.itextpdf.text.Paragraph
 import com.itextpdf.text.pdf.PdfWriter
 import com.lifelog.core.dispatcher.DispatcherProvider
 import com.lifelog.data.datasource.toDomain
+import com.lifelog.data.datasource.toDomainOrNull
 import com.lifelog.data.datasource.toEntity
 import com.lifelog.data.preferences.SettingsDataStore
 import com.lifelog.database.LifeLogDatabase
@@ -15,6 +16,7 @@ import com.lifelog.database.dao.CallLogDao
 import com.lifelog.database.dao.LocationLogDao
 import com.lifelog.database.dao.NotificationLogDao
 import com.lifelog.database.dao.ScreenEventDao
+import com.lifelog.database.dao.SmsLogDao
 import com.lifelog.database.dao.TimelineEventDao
 import com.lifelog.domain.model.AppSettings
 import com.lifelog.domain.model.AppUsage
@@ -25,6 +27,10 @@ import com.lifelog.domain.model.Language
 import com.lifelog.domain.model.LocationLog
 import com.lifelog.domain.model.NotificationLog
 import com.lifelog.domain.model.ScreenEvent
+import com.lifelog.domain.model.SmsMessage
+import com.lifelog.domain.model.SmsMessageType
+import com.lifelog.domain.model.SmsSyncStats
+import com.lifelog.domain.model.SmsThread
 import com.lifelog.domain.model.ThemeMode
 import com.lifelog.domain.model.TimelineEvent
 import com.lifelog.domain.repository.AppUsageRepository
@@ -36,9 +42,11 @@ import com.lifelog.domain.repository.LocationRepository
 import com.lifelog.domain.repository.NotificationRepository
 import com.lifelog.domain.repository.ScreenEventRepository
 import com.lifelog.domain.repository.SettingsRepository
+import com.lifelog.domain.repository.SmsRepository
 import com.lifelog.domain.repository.TimelineRepository
 import com.lifelog.utils.DateTimeUtils
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -55,22 +63,20 @@ class TimelineRepositoryImpl
         private val dao: TimelineEventDao,
         private val dispatchers: DispatcherProvider,
     ) : TimelineRepository {
-        override fun getAllEvents(): Flow<List<TimelineEvent>> = dao.getAll().map { list -> list.map { it.toDomain() } }
+        override fun getAllEvents(): Flow<List<TimelineEvent>> = dao.getAll().map { list -> list.mapNotNull { it.toDomainOrNull() } }
 
         override fun getEventsForDate(date: Long): Flow<List<TimelineEvent>> {
             val end = DateTimeUtils.endOfDay(date)
-            return dao.getBetween(date, end + 1).map { list -> list.map { it.toDomain() } }
+            return dao.getBetween(date, end + 1).map { list -> list.mapNotNull { it.toDomainOrNull() } }
         }
 
         override fun getEventsBetween(
             start: Long,
             end: Long,
-        ): Flow<List<TimelineEvent>> = dao.getBetween(start, end).map { list -> list.map { it.toDomain() } }
+        ): Flow<List<TimelineEvent>> = dao.getBetween(start, end).map { list -> list.mapNotNull { it.toDomainOrNull() } }
 
         override fun searchEvents(keyword: String): Flow<List<TimelineEvent>> =
-            dao.search(
-                keyword,
-            ).map { list -> list.map { it.toDomain() } }
+            dao.search(keyword).map { list -> list.mapNotNull { it.toDomainOrNull() } }
 
         override suspend fun insertEvent(event: TimelineEvent): Long =
             withContext(dispatchers.io) {
@@ -104,11 +110,39 @@ class AppUsageRepositoryImpl
             endDate: String,
         ): Flow<List<AppUsage>> = dao.getBetween(startDate, endDate).map { list -> list.map { it.toDomain() } }
 
+        override fun getAggregatedUsageBetween(
+            startDate: String,
+            endDate: String,
+        ): Flow<List<AppUsage>> = dao.getAggregatedBetween(startDate, endDate).map { list -> list.map { it.toDomain() } }
+
         override fun getTopApps(limit: Int): Flow<List<AppUsage>> = dao.getTop(limit).map { list -> list.map { it.toDomain() } }
 
         override suspend fun insertOrUpdateUsage(usage: AppUsage) =
             withContext(dispatchers.io) {
-                dao.insert(usage.toEntity())
+                val existing = dao.getByPackageAndDate(usage.packageName, usage.date)
+                val merged =
+                    if (existing == null) {
+                        usage
+                    } else {
+                        val current = existing.toDomain()
+                        AppUsage(
+                            id = current.id,
+                            appName = usage.appName.ifBlank { current.appName },
+                            packageName = current.packageName,
+                            firstOpen =
+                                if (usage.firstOpen > 0) {
+                                    minOf(current.firstOpen, usage.firstOpen)
+                                } else {
+                                    current.firstOpen
+                                },
+                            lastOpen = maxOf(current.lastOpen, usage.lastOpen),
+                            lastClose = maxOf(current.lastClose, usage.lastClose),
+                            totalDuration = current.totalDuration + usage.totalDuration,
+                            launchCount = current.launchCount + usage.launchCount,
+                            date = current.date,
+                        )
+                    }
+                dao.insert(merged.toEntity())
             }
 
         override suspend fun deleteOldUsage(beforeDate: String) =
@@ -134,13 +168,29 @@ class NotificationRepositoryImpl
         override fun searchNotifications(keyword: String): Flow<List<NotificationLog>> =
             dao.search(keyword).map { list -> list.map { it.toDomain() } }
 
+        override fun getNotificationsByPackage(packageName: String): Flow<List<NotificationLog>> =
+            dao.getByPackage(packageName).map { list -> list.map { it.toDomain() } }
+
         override fun getNotificationCountForDate(date: Long): Flow<Int> {
             val end = DateTimeUtils.endOfDay(date)
             return dao.getCountForDate(date, end + 1)
         }
 
-        override suspend fun insertNotification(notification: NotificationLog): Long =
-            withContext(dispatchers.io) { dao.insert(notification.toEntity()) }
+        override suspend fun upsertNotification(notification: NotificationLog): Long =
+            withContext(dispatchers.io) {
+                val existing =
+                    dao.findByPackageAndNotificationId(
+                        notification.packageName,
+                        notification.notificationId,
+                    )
+                val entity =
+                    notification.toEntity().copy(
+                        id = existing?.id ?: 0L,
+                        timestamp = existing?.timestamp ?: notification.timestamp,
+                        updatedAt = System.currentTimeMillis(),
+                    )
+                dao.insert(entity)
+            }
 
         override suspend fun deleteOldNotifications(beforeTimestamp: Long) =
             withContext(
@@ -172,6 +222,98 @@ class CallRepositoryImpl
         override suspend fun insertCall(call: CallLog): Long = withContext(dispatchers.io) { dao.insert(call.toEntity()) }
 
         override suspend fun deleteOldCalls(beforeTimestamp: Long) = withContext(dispatchers.io) { dao.deleteBefore(beforeTimestamp) }
+    }
+
+@Singleton
+class SmsRepositoryImpl
+    @Inject
+    constructor(
+        private val dao: SmsLogDao,
+        private val dispatchers: DispatcherProvider,
+    ) : SmsRepository {
+        private val providerStats = MutableStateFlow(SmsSyncStats())
+
+        override fun getAllMessages(): Flow<List<SmsMessage>> = dao.getAll().map { list -> list.map { it.toDomain() } }
+
+        override fun getMessagesForThread(threadId: Long): Flow<List<SmsMessage>> =
+            dao.getForThread(threadId).map { list -> list.map { it.toDomain() } }
+
+        override fun getAllThreads(): Flow<List<SmsThread>> = getAllMessages().map { messages -> buildThreads(messages) }
+
+        override fun getSyncStats(): Flow<SmsSyncStats> =
+            combine(dao.getAll(), providerStats) { entities, provider ->
+                val counts = entities.groupBy { it.type }.mapValues { entry -> entry.value.size }
+                SmsSyncStats(
+                    inboxCount = counts[1] ?: 0,
+                    sentCount = counts[2] ?: 0,
+                    draftCount = counts[3] ?: 0,
+                    outboxCount = counts[4] ?: 0,
+                    failedCount = counts[5] ?: 0,
+                    queuedCount = counts[6] ?: 0,
+                    providerInboxCount = provider.providerInboxCount,
+                    providerSentCount = provider.providerSentCount,
+                    providerOutboxCount = provider.providerOutboxCount,
+                    providerDraftCount = provider.providerDraftCount,
+                )
+            }
+
+        override fun searchMessages(keyword: String): Flow<List<SmsMessage>> =
+            dao.search(keyword).map { list -> list.map { it.toDomain() } }
+
+        override suspend fun upsertMessage(message: SmsMessage): Long =
+            withContext(dispatchers.io) {
+                val existing = dao.findByProviderId(message.providerId)
+                val entity =
+                    message.toEntity().copy(
+                        id = existing?.id ?: 0L,
+                    )
+                dao.insert(entity)
+            }
+
+        override suspend fun upsertMessages(messages: List<SmsMessage>) =
+            withContext(dispatchers.io) {
+                messages.forEach { upsertMessage(it) }
+            }
+
+        override suspend fun deleteOldMessages(beforeTimestamp: Long) =
+            withContext(dispatchers.io) {
+                dao.deleteBefore(beforeTimestamp)
+            }
+
+        override suspend fun getCountByType(type: SmsMessageType): Int =
+            withContext(dispatchers.io) {
+                dao.getCountByType(type.toAndroidType())
+            }
+
+        override suspend fun updateProviderStats(stats: SmsSyncStats) {
+            providerStats.value = stats
+        }
+
+        private fun buildThreads(messages: List<SmsMessage>): List<SmsThread> =
+            messages
+                .groupBy { it.threadId }
+                .mapNotNull { (threadId, threadMessages) ->
+                    val latest = threadMessages.maxByOrNull { it.date } ?: return@mapNotNull null
+                    SmsThread(
+                        threadId = threadId,
+                        address = latest.address,
+                        contactName = threadMessages.firstNotNullOfOrNull { it.contactName },
+                        lastMessage = latest.body,
+                        lastDate = latest.date,
+                        messageCount = threadMessages.size,
+                    )
+                }.sortedByDescending { it.lastDate }
+
+        private fun SmsMessageType.toAndroidType(): Int =
+            when (this) {
+                SmsMessageType.INBOX -> 1
+                SmsMessageType.SENT -> 2
+                SmsMessageType.DRAFT -> 3
+                SmsMessageType.OUTBOX -> 4
+                SmsMessageType.FAILED -> 5
+                SmsMessageType.QUEUED -> 6
+                SmsMessageType.UNKNOWN -> 0
+            }
     }
 
 @Singleton
@@ -260,6 +402,21 @@ class SettingsRepositoryImpl
         override suspend fun setOnboardingCompleted(completed: Boolean) =
             withContext(dispatchers.io) {
                 dataStore.setOnboardingCompleted(completed)
+            }
+
+        override suspend fun setMonitoringEnabled(enabled: Boolean) =
+            withContext(dispatchers.io) {
+                dataStore.setMonitoringEnabled(enabled)
+            }
+
+        override suspend fun setMonitoringStartedAt(timestamp: Long) =
+            withContext(dispatchers.io) {
+                dataStore.setMonitoringStartedAt(timestamp)
+            }
+
+        override suspend fun setLastOpenedRoute(route: String) =
+            withContext(dispatchers.io) {
+                dataStore.setLastOpenedRoute(route)
             }
     }
 

@@ -8,6 +8,7 @@ import com.lifelog.domain.repository.BatteryRepository
 import com.lifelog.domain.repository.CallRepository
 import com.lifelog.domain.repository.NotificationRepository
 import com.lifelog.domain.repository.ScreenEventRepository
+import com.lifelog.domain.repository.SmsRepository
 import com.lifelog.domain.repository.TimelineRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -82,6 +83,7 @@ class CleanupOldLogsUseCase(
     private val appUsageRepository: AppUsageRepository,
     private val notificationRepository: NotificationRepository,
     private val callRepository: CallRepository,
+    private val smsRepository: SmsRepository,
     private val locationRepository: com.lifelog.domain.repository.LocationRepository,
     private val batteryRepository: BatteryRepository,
     private val screenEventRepository: ScreenEventRepository,
@@ -92,6 +94,7 @@ class CleanupOldLogsUseCase(
         timelineRepository.deleteOldEvents(cutoff)
         notificationRepository.deleteOldNotifications(cutoff)
         callRepository.deleteOldCalls(cutoff)
+        smsRepository.deleteOldMessages(cutoff)
         locationRepository.deleteOldLocations(cutoff)
         batteryRepository.deleteOldBatteryLogs(cutoff)
         screenEventRepository.deleteOldScreenEvents(cutoff)

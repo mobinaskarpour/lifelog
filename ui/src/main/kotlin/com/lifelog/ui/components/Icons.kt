@@ -25,6 +25,8 @@ fun timelineIcon(type: TimelineEventType): ImageVector =
     when (type) {
         TimelineEventType.PHONE_UNLOCKED -> Icons.Outlined.LockOpen
         TimelineEventType.APP_OPENED, TimelineEventType.APP_CLOSED -> Icons.Filled.Apps
+        TimelineEventType.WINDOW_CHANGED -> Icons.Filled.Apps
+        TimelineEventType.VIEW_CLICKED, TimelineEventType.VIEW_SCROLLED -> Icons.Filled.History
         TimelineEventType.INCOMING_CALL -> Icons.AutoMirrored.Outlined.PhoneCallback
         TimelineEventType.OUTGOING_CALL -> Icons.Outlined.Phone
         TimelineEventType.MISSED_CALL -> Icons.AutoMirrored.Outlined.PhoneMissed
@@ -41,6 +43,9 @@ fun timelineColor(type: TimelineEventType): Color =
         TimelineEventType.PHONE_UNLOCKED -> Color(0xFF4CAF50)
         TimelineEventType.APP_OPENED -> Color(0xFF2196F3)
         TimelineEventType.APP_CLOSED -> Color(0xFF607D8B)
+        TimelineEventType.WINDOW_CHANGED -> Color(0xFF3F51B5)
+        TimelineEventType.VIEW_CLICKED -> Color(0xFF9C27B0)
+        TimelineEventType.VIEW_SCROLLED -> Color(0xFF673AB7)
         TimelineEventType.INCOMING_CALL -> Color(0xFF4CAF50)
         TimelineEventType.OUTGOING_CALL -> Color(0xFF2196F3)
         TimelineEventType.MISSED_CALL -> Color(0xFFF44336)
