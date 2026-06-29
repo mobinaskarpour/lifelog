@@ -262,18 +262,27 @@ class SmsRepositoryImpl
 
         override suspend fun upsertMessage(message: SmsMessage): Long =
             withContext(dispatchers.io) {
-                val existing = dao.findByProviderId(message.providerId)
-                val entity =
-                    message.toEntity().copy(
-                        id = existing?.id ?: 0L,
-                    )
-                dao.insert(entity)
+                dao.upsertByProviderId(message.toEntity())
+                cleanupStaleOutboxIfSent(message)
+                dao.findByProviderId(message.providerId)?.id ?: 0L
             }
 
         override suspend fun upsertMessages(messages: List<SmsMessage>) =
             withContext(dispatchers.io) {
-                messages.forEach { upsertMessage(it) }
+                if (messages.isEmpty()) return@withContext
+                dao.upsertAllByProviderId(messages.map { it.toEntity() })
+                messages.filter { it.type == SmsMessageType.SENT }.forEach { cleanupStaleOutboxIfSent(it) }
             }
+
+        private suspend fun cleanupStaleOutboxIfSent(message: SmsMessage) {
+            if (message.type != SmsMessageType.SENT) return
+            dao.deleteStaleOutboxForSent(
+                threadId = message.threadId,
+                body = message.body,
+                sentProviderId = message.providerId,
+                sentDate = message.date,
+            )
+        }
 
         override suspend fun deleteOldMessages(beforeTimestamp: Long) =
             withContext(dispatchers.io) {
@@ -301,6 +310,11 @@ class SmsRepositoryImpl
                         lastMessage = latest.body,
                         lastDate = latest.date,
                         messageCount = threadMessages.size,
+                        unreadCount =
+                            threadMessages.count {
+                                it.type == SmsMessageType.INBOX && !it.read
+                            },
+                        isLastOutgoing = latest.type.isOutgoing,
                     )
                 }.sortedByDescending { it.lastDate }
 

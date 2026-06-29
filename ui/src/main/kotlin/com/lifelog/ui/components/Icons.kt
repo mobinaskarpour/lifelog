@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.Notifications
@@ -85,5 +85,5 @@ val bottomNavItems =
         BottomNavItem("timeline", "Timeline", Icons.Filled.History),
         BottomNavItem("apps", "Apps", Icons.Filled.Apps),
         BottomNavItem("notifications", "Alerts", Icons.Filled.Notifications),
-        BottomNavItem("settings", "Settings", Icons.Filled.Settings),
+        BottomNavItem("sms", "Messages", Icons.Filled.Sms),
     )

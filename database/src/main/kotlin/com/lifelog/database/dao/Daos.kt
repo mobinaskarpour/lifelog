@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.lifelog.database.entity.AppUsageEntity
 import com.lifelog.database.entity.BatteryLogEntity
 import com.lifelog.database.entity.CallLogEntity
@@ -272,6 +273,44 @@ interface SmsLogDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(messages: List<SmsLogEntity>)
+
+    @Transaction
+    suspend fun upsertByProviderId(message: SmsLogEntity) {
+        val existing = findByProviderId(message.providerId)
+        insert(
+            if (existing != null) {
+                message.copy(id = existing.id)
+            } else {
+                message.copy(id = 0)
+            },
+        )
+    }
+
+    @Transaction
+    suspend fun upsertAllByProviderId(messages: List<SmsLogEntity>) {
+        messages.forEach { message ->
+            val existing = findByProviderId(message.providerId)
+            insert(
+                if (existing != null) {
+                    message.copy(id = existing.id)
+                } else {
+                    message.copy(id = 0)
+                },
+            )
+        }
+    }
+
+    @Query(
+        "DELETE FROM sms_logs WHERE type = 4 AND threadId = :threadId AND body = :body " +
+            "AND providerId != :sentProviderId AND ABS(date - :sentDate) < :windowMs",
+    )
+    suspend fun deleteStaleOutboxForSent(
+        threadId: Long,
+        body: String,
+        sentProviderId: Long,
+        sentDate: Long,
+        windowMs: Long = 120_000L,
+    )
 
     @Query("DELETE FROM sms_logs WHERE date < :before")
     suspend fun deleteBefore(before: Long)

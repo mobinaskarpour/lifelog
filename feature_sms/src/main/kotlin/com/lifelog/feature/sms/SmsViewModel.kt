@@ -106,6 +106,11 @@ class SmsViewModel
                         lastMessage = latest.body,
                         lastDate = latest.date,
                         messageCount = threadMessages.size,
+                        unreadCount =
+                            threadMessages.count {
+                                it.type == com.lifelog.domain.model.SmsMessageType.INBOX && !it.read
+                            },
+                        isLastOutgoing = latest.type.isOutgoing,
                     )
                 }.sortedByDescending { it.lastDate }
 

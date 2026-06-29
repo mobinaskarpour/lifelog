@@ -1,7 +1,10 @@
 package com.lifelog.app.navigation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -64,7 +67,7 @@ fun LifeLogNavHost(
             MainNavItem(LifeLogRoutes.TIMELINE, "Timeline", com.lifelog.ui.components.bottomNavItems[1].icon),
             MainNavItem(LifeLogRoutes.APPS, "Apps", com.lifelog.ui.components.bottomNavItems[2].icon),
             MainNavItem(LifeLogRoutes.NOTIFICATIONS, "Alerts", com.lifelog.ui.components.bottomNavItems[3].icon),
-            MainNavItem(LifeLogRoutes.SETTINGS, "Settings", com.lifelog.ui.components.bottomNavItems[4].icon),
+            MainNavItem(LifeLogRoutes.SMS, "Messages", com.lifelog.ui.components.bottomNavItems[4].icon),
         )
 
     val bottomNavRoutes = bottomNavItems.map { it.route }
@@ -91,7 +94,8 @@ fun LifeLogNavHost(
         onRouteHandled()
     }
 
-    val showBottomBar = currentRoute in bottomNavItems.map { it.route }
+    val showBottomBar = currentRoute in bottomNavRoutes
+    val showSearchFab = showBottomBar && currentRoute != LifeLogRoutes.SMS
 
     Scaffold(
         modifier = modifier,
@@ -122,7 +126,7 @@ fun LifeLogNavHost(
             }
         },
         floatingActionButton = {
-            if (showBottomBar) {
+            if (showSearchFab) {
                 FloatingActionButton(
                     onClick = { navController.navigate(LifeLogRoutes.SEARCH) },
                 ) {
@@ -146,7 +150,11 @@ fun LifeLogNavHost(
                     },
                 )
             }
-            composable(LifeLogRoutes.DASHBOARD) { DashboardScreen() }
+            composable(LifeLogRoutes.DASHBOARD) {
+                DashboardScreen(
+                    onNavigateToSettings = { navController.navigate(LifeLogRoutes.SETTINGS) },
+                )
+            }
             composable(LifeLogRoutes.TIMELINE) { TimelineScreen() }
             composable(LifeLogRoutes.APPS) { AppsScreen() }
             composable(LifeLogRoutes.NOTIFICATIONS) { NotificationsScreen() }
@@ -156,20 +164,36 @@ fun LifeLogNavHost(
                     onThreadClick = { threadId ->
                         navController.navigate("sms/$threadId")
                     },
+                    onNavigateToSettings = { navController.navigate(LifeLogRoutes.SETTINGS) },
                 )
             }
             composable(
                 route = LifeLogRoutes.SMS_CONVERSATION,
                 arguments = listOf(navArgument("threadId") { type = NavType.LongType }),
+                enterTransition = {
+                    slideInHorizontally(animationSpec = tween(280)) { fullWidth -> fullWidth }
+                },
+                exitTransition = {
+                    slideOutHorizontally(animationSpec = tween(280)) { fullWidth -> -fullWidth / 3 }
+                },
+                popEnterTransition = {
+                    slideInHorizontally(animationSpec = tween(280)) { fullWidth -> -fullWidth / 3 }
+                },
+                popExitTransition = {
+                    slideOutHorizontally(animationSpec = tween(280)) { fullWidth -> fullWidth }
+                },
             ) {
-                SmsConversationScreen(onBack = { navController.popBackStack() })
+                SmsConversationScreen(
+                    onBack = { navController.popBackStack() },
+                    onNavigateToSettings = { navController.navigate(LifeLogRoutes.SETTINGS) },
+                )
             }
             composable(LifeLogRoutes.LOCATION) { LocationScreen() }
             composable(LifeLogRoutes.STATISTICS) { StatisticsScreen() }
             composable(LifeLogRoutes.SETTINGS) {
                 SettingsScreen(
                     onNavigateToAbout = { navController.navigate(LifeLogRoutes.ABOUT) },
-                    onNavigateToSms = { navController.navigate(LifeLogRoutes.SMS) },
+                    onBack = { navController.popBackStack() },
                 )
             }
             composable(LifeLogRoutes.ABOUT) { AboutScreen() }

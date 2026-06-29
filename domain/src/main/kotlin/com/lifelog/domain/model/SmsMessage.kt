@@ -52,6 +52,8 @@ data class SmsThread(
     val lastMessage: String,
     val lastDate: Long,
     val messageCount: Int,
+    val unreadCount: Int = 0,
+    val isLastOutgoing: Boolean = false,
 )
 
 data class SmsSyncStats(

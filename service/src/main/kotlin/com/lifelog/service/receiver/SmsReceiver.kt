@@ -26,7 +26,7 @@ class SmsReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val syncManager = context.smsSyncManager()
-                syncManager.syncFromProvider()
+                syncManager.requestFollowUpSync()
             } finally {
                 pendingResult.finish()
             }

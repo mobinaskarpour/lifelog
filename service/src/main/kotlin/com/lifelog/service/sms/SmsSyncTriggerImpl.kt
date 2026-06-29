@@ -13,4 +13,8 @@ class SmsSyncTriggerImpl
         override suspend fun syncFromProvider() {
             smsSyncManager.syncFromProvider()
         }
+
+        override fun requestFollowUpSync() {
+            smsSyncManager.requestFollowUpSync()
+        }
     }
