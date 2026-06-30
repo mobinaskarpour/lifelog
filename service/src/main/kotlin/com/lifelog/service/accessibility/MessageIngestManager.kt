@@ -55,8 +55,7 @@ class MessageIngestManager
                 """{"text":${jsonString(node.text)},"class":${jsonString(node.className)}}"""
             }.let { "[$it]" }
 
-        private fun jsonString(value: String): String =
-            "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+        private fun jsonString(value: String): String = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
         companion object {
             private const val TAG = "Accessibility"

@@ -2,11 +2,11 @@ package com.lifelog.service
 
 import android.accessibilityservice.AccessibilityService
 import android.view.accessibility.AccessibilityEvent
+import com.lifelog.domain.model.AccessibilityDebugEvent
 import com.lifelog.domain.model.TimelineEvent
 import com.lifelog.domain.model.TimelineEventType
 import com.lifelog.domain.repository.SettingsRepository
 import com.lifelog.domain.repository.TimelineRepository
-import com.lifelog.domain.model.AccessibilityDebugEvent
 import com.lifelog.service.accessibility.AccessibilityDebugStore
 import com.lifelog.service.accessibility.MessageExtractor
 import com.lifelog.service.accessibility.MessageIngestManager
@@ -18,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject

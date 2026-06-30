@@ -1,5 +1,6 @@
 package com.lifelog.app.navigation
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -20,8 +21,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import android.net.Uri
-import com.lifelog.app.BuildConfig
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -29,19 +28,20 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.lifelog.app.BuildConfig
 import com.lifelog.feature.apps.AppsScreen
 import com.lifelog.feature.calls.CallsScreen
 import com.lifelog.feature.dashboard.DashboardScreen
 import com.lifelog.feature.export.GlobalSearchScreen
 import com.lifelog.feature.location.LocationScreen
+import com.lifelog.feature.messages.MessagesConversationScreen
+import com.lifelog.feature.messages.MessagesDebugScreen
+import com.lifelog.feature.messages.MessagesScreen
 import com.lifelog.feature.notifications.NotificationsScreen
 import com.lifelog.feature.permissions.OnboardingScreen
 import com.lifelog.feature.settings.AboutScreen
 import com.lifelog.feature.settings.SettingsScreen
 import com.lifelog.feature.settings.StatisticsScreen
-import com.lifelog.feature.messages.MessagesConversationScreen
-import com.lifelog.feature.messages.MessagesDebugScreen
-import com.lifelog.feature.messages.MessagesScreen
 import com.lifelog.feature.timeline.TimelineScreen
 import com.lifelog.ui.navigation.LifeLogRoutes
 

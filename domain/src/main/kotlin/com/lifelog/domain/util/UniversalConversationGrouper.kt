@@ -1,12 +1,12 @@
 package com.lifelog.domain.util
 
 import com.lifelog.domain.model.MessageChannel
+import com.lifelog.domain.model.MessagesOverviewStats
 import com.lifelog.domain.model.SmsMessage
 import com.lifelog.domain.model.SmsThread
 import com.lifelog.domain.model.UnifiedMessage
 import com.lifelog.domain.model.UniversalChatMessage
 import com.lifelog.domain.model.UniversalConversation
-import com.lifelog.domain.model.MessagesOverviewStats
 
 object UniversalConversationGrouper {
     fun fromAppMessages(messages: List<UnifiedMessage>): List<UniversalConversation> =
@@ -46,8 +46,7 @@ object UniversalConversationGrouper {
     fun mergeConversations(
         appConversations: List<UniversalConversation>,
         smsConversations: List<UniversalConversation>,
-    ): List<UniversalConversation> =
-        (appConversations + smsConversations).sortedByDescending { it.lastTimestamp }
+    ): List<UniversalConversation> = (appConversations + smsConversations).sortedByDescending { it.lastTimestamp }
 
     fun filterByChannel(
         conversations: List<UniversalConversation>,

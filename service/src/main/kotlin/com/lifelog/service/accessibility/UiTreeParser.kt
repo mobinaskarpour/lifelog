@@ -10,8 +10,7 @@ object UiTreeParser {
         return nodes
     }
 
-    fun contentHash(nodes: List<UiTextNode>): Int =
-        nodes.joinToString(separator = "|") { "${it.top}:${it.text}" }.hashCode()
+    fun contentHash(nodes: List<UiTextNode>): Int = nodes.joinToString(separator = "|") { "${it.top}:${it.text}" }.hashCode()
 
     private fun traverse(
         node: AccessibilityNodeInfo,

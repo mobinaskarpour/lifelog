@@ -340,8 +340,7 @@ class UnifiedMessageRepositoryImpl
         private val dao: UnifiedMessageDao,
         private val dispatchers: DispatcherProvider,
     ) : UnifiedMessageRepository {
-        override fun getAllMessages(): Flow<List<UnifiedMessage>> =
-            dao.getAll().map { list -> list.map { it.toDomain() } }
+        override fun getAllMessages(): Flow<List<UnifiedMessage>> = dao.getAll().map { list -> list.map { it.toDomain() } }
 
         override fun getMessagesBySource(source: String): Flow<List<UnifiedMessage>> =
             dao.getBySource(source).map { list -> list.map { it.toDomain() } }
@@ -349,8 +348,7 @@ class UnifiedMessageRepositoryImpl
         override fun getMessagesForConversation(
             source: String,
             sender: String,
-        ): Flow<List<UnifiedMessage>> =
-            dao.getByConversation(source, sender).map { list -> list.map { it.toDomain() } }
+        ): Flow<List<UnifiedMessage>> = dao.getByConversation(source, sender).map { list -> list.map { it.toDomain() } }
 
         override fun searchMessages(keyword: String): Flow<List<UnifiedMessage>> =
             dao.search(keyword).map { list -> list.map { it.toDomain() } }

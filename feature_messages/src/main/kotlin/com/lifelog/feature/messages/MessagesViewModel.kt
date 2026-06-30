@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,10 +35,10 @@ class MessagesViewModel
         private val messagesRepository: MessagesRepository,
         private val smsSyncTrigger: SmsSyncTrigger,
     ) : ViewModel() {
-        private val _selectedChannel = MutableStateFlow(MessageChannel.ALL)
-        private val _searchQuery = MutableStateFlow("")
-        private val _uiState = MutableStateFlow(MessagesUiState())
-        val uiState: StateFlow<MessagesUiState> = _uiState.asStateFlow()
+        private val selectedChannelState = MutableStateFlow(MessageChannel.ALL)
+        private val searchQueryState = MutableStateFlow("")
+        private val uiStateInternal = MutableStateFlow(MessagesUiState())
+        val uiState: StateFlow<MessagesUiState> = uiStateInternal.asStateFlow()
 
         init {
             viewModelScope.launch { smsSyncTrigger.syncFromProvider() }
@@ -47,16 +46,16 @@ class MessagesViewModel
         }
 
         fun onChannelSelected(channel: MessageChannel) {
-            _selectedChannel.value = channel
+            selectedChannelState.value = channel
         }
 
         fun onSearchQueryChange(query: String) {
-            _searchQuery.value = query
+            searchQueryState.value = query
         }
 
         private fun observeData() {
             viewModelScope.launch {
-                combine(_selectedChannel, _searchQuery) { channel, query ->
+                combine(selectedChannelState, searchQueryState) { channel, query ->
                     channel to query
                 }.flatMapLatest { (channel, query) ->
                     combine(
@@ -73,9 +72,9 @@ class MessagesViewModel
                         )
                     }
                 }.catch {
-                    _uiState.value = _uiState.value.copy(isLoading = false)
+                    uiStateInternal.value = uiStateInternal.value.copy(isLoading = false)
                 }.collect { state ->
-                    _uiState.value = state
+                    uiStateInternal.value = state
                 }
             }
         }
