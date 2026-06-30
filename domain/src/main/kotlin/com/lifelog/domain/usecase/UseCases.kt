@@ -84,6 +84,7 @@ class CleanupOldLogsUseCase(
     private val notificationRepository: NotificationRepository,
     private val callRepository: CallRepository,
     private val smsRepository: SmsRepository,
+    private val unifiedMessageRepository: com.lifelog.domain.repository.UnifiedMessageRepository,
     private val locationRepository: com.lifelog.domain.repository.LocationRepository,
     private val batteryRepository: BatteryRepository,
     private val screenEventRepository: ScreenEventRepository,
@@ -95,6 +96,7 @@ class CleanupOldLogsUseCase(
         notificationRepository.deleteOldNotifications(cutoff)
         callRepository.deleteOldCalls(cutoff)
         smsRepository.deleteOldMessages(cutoff)
+        unifiedMessageRepository.deleteOldMessages(cutoff)
         locationRepository.deleteOldLocations(cutoff)
         batteryRepository.deleteOldBatteryLogs(cutoff)
         screenEventRepository.deleteOldScreenEvents(cutoff)

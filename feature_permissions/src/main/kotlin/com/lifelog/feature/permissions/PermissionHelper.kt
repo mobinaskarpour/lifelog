@@ -33,7 +33,7 @@ object PermissionHelper {
             PermissionItem(
                 id = "accessibility",
                 title = "Accessibility Service",
-                description = "Enhances screen event detection including device unlock tracking.",
+                description = "Required to read on-screen chat text from messaging apps (Telegram, WhatsApp, Instagram) and store it locally. Also improves timeline tracking.",
                 isGranted = isAccessibilityEnabled(context),
             ),
             PermissionItem(

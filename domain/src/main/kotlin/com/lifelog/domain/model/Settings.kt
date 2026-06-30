@@ -25,4 +25,5 @@ data class AppSettings(
     val monitoringEnabled: Boolean = true,
     val monitoringStartedAt: Long = 0L,
     val lastOpenedRoute: String = "dashboard",
+    val appMessageCaptureEnabled: Boolean = true,
 )

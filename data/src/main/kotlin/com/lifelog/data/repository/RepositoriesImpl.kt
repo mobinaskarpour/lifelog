@@ -18,6 +18,7 @@ import com.lifelog.database.dao.NotificationLogDao
 import com.lifelog.database.dao.ScreenEventDao
 import com.lifelog.database.dao.SmsLogDao
 import com.lifelog.database.dao.TimelineEventDao
+import com.lifelog.database.dao.UnifiedMessageDao
 import com.lifelog.domain.model.AppSettings
 import com.lifelog.domain.model.AppUsage
 import com.lifelog.domain.model.BatteryLog
@@ -33,6 +34,7 @@ import com.lifelog.domain.model.SmsSyncStats
 import com.lifelog.domain.model.SmsThread
 import com.lifelog.domain.model.ThemeMode
 import com.lifelog.domain.model.TimelineEvent
+import com.lifelog.domain.model.UnifiedMessage
 import com.lifelog.domain.repository.AppUsageRepository
 import com.lifelog.domain.repository.BatteryRepository
 import com.lifelog.domain.repository.CallRepository
@@ -44,6 +46,7 @@ import com.lifelog.domain.repository.ScreenEventRepository
 import com.lifelog.domain.repository.SettingsRepository
 import com.lifelog.domain.repository.SmsRepository
 import com.lifelog.domain.repository.TimelineRepository
+import com.lifelog.domain.repository.UnifiedMessageRepository
 import com.lifelog.utils.DateTimeUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -327,6 +330,40 @@ class SmsRepositoryImpl
                 SmsMessageType.FAILED -> 5
                 SmsMessageType.QUEUED -> 6
                 SmsMessageType.UNKNOWN -> 0
+            }
+    }
+
+@Singleton
+class UnifiedMessageRepositoryImpl
+    @Inject
+    constructor(
+        private val dao: UnifiedMessageDao,
+        private val dispatchers: DispatcherProvider,
+    ) : UnifiedMessageRepository {
+        override fun getAllMessages(): Flow<List<UnifiedMessage>> =
+            dao.getAll().map { list -> list.map { it.toDomain() } }
+
+        override fun getMessagesBySource(source: String): Flow<List<UnifiedMessage>> =
+            dao.getBySource(source).map { list -> list.map { it.toDomain() } }
+
+        override fun getMessagesForConversation(
+            source: String,
+            sender: String,
+        ): Flow<List<UnifiedMessage>> =
+            dao.getByConversation(source, sender).map { list -> list.map { it.toDomain() } }
+
+        override fun searchMessages(keyword: String): Flow<List<UnifiedMessage>> =
+            dao.search(keyword).map { list -> list.map { it.toDomain() } }
+
+        override suspend fun upsertMessage(message: UnifiedMessage): Long =
+            withContext(dispatchers.io) {
+                dao.upsertByDedupKey(message.toEntity())
+                dao.findByDedupKey(message.dedupKey)?.id ?: 0L
+            }
+
+        override suspend fun deleteOldMessages(beforeTimestamp: Long) =
+            withContext(dispatchers.io) {
+                dao.deleteBefore(beforeTimestamp)
             }
     }
 

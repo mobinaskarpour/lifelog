@@ -10,6 +10,7 @@ import com.lifelog.database.dao.NotificationLogDao
 import com.lifelog.database.dao.ScreenEventDao
 import com.lifelog.database.dao.SmsLogDao
 import com.lifelog.database.dao.TimelineEventDao
+import com.lifelog.database.dao.UnifiedMessageDao
 import com.lifelog.database.entity.AppUsageEntity
 import com.lifelog.database.entity.BatteryLogEntity
 import com.lifelog.database.entity.CallLogEntity
@@ -18,6 +19,7 @@ import com.lifelog.database.entity.NotificationLogEntity
 import com.lifelog.database.entity.ScreenEventEntity
 import com.lifelog.database.entity.SmsLogEntity
 import com.lifelog.database.entity.TimelineEventEntity
+import com.lifelog.database.entity.UnifiedMessageEntity
 
 @Database(
     entities = [
@@ -29,8 +31,9 @@ import com.lifelog.database.entity.TimelineEventEntity
         BatteryLogEntity::class,
         ScreenEventEntity::class,
         SmsLogEntity::class,
+        UnifiedMessageEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 abstract class LifeLogDatabase : RoomDatabase() {
@@ -49,6 +52,8 @@ abstract class LifeLogDatabase : RoomDatabase() {
     abstract fun screenEventDao(): ScreenEventDao
 
     abstract fun smsLogDao(): SmsLogDao
+
+    abstract fun unifiedMessageDao(): UnifiedMessageDao
 
     companion object {
         const val DATABASE_NAME = "lifelog.db"

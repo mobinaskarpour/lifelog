@@ -13,6 +13,7 @@ import com.lifelog.database.entity.NotificationLogEntity
 import com.lifelog.database.entity.ScreenEventEntity
 import com.lifelog.database.entity.SmsLogEntity
 import com.lifelog.database.entity.TimelineEventEntity
+import com.lifelog.database.entity.UnifiedMessageEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -317,4 +318,50 @@ interface SmsLogDao {
 
     @Query("SELECT * FROM sms_logs")
     suspend fun getAllSync(): List<SmsLogEntity>
+}
+
+@Dao
+interface UnifiedMessageDao {
+    @Query("SELECT * FROM unified_messages ORDER BY timestamp DESC")
+    fun getAll(): Flow<List<UnifiedMessageEntity>>
+
+    @Query("SELECT * FROM unified_messages WHERE source = :source ORDER BY timestamp DESC")
+    fun getBySource(source: String): Flow<List<UnifiedMessageEntity>>
+
+    @Query(
+        "SELECT * FROM unified_messages WHERE text LIKE '%' || :keyword || '%' " +
+            "OR sender LIKE '%' || :keyword || '%' " +
+            "OR source LIKE '%' || :keyword || '%' ORDER BY timestamp DESC",
+    )
+    fun search(keyword: String): Flow<List<UnifiedMessageEntity>>
+
+    @Query("SELECT * FROM unified_messages WHERE dedupKey = :dedupKey LIMIT 1")
+    suspend fun findByDedupKey(dedupKey: String): UnifiedMessageEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(message: UnifiedMessageEntity): Long
+
+    @Transaction
+    suspend fun upsertByDedupKey(message: UnifiedMessageEntity) {
+        val existing = findByDedupKey(message.dedupKey)
+        insert(
+            if (existing != null) {
+                message.copy(id = existing.id)
+            } else {
+                message.copy(id = 0)
+            },
+        )
+    }
+
+    @Query("SELECT * FROM unified_messages WHERE source = :source AND sender = :sender ORDER BY timestamp ASC")
+    fun getByConversation(
+        source: String,
+        sender: String,
+    ): Flow<List<UnifiedMessageEntity>>
+
+    @Query("DELETE FROM unified_messages WHERE timestamp < :before")
+    suspend fun deleteBefore(before: Long)
+
+    @Query("SELECT * FROM unified_messages")
+    suspend fun getAllSync(): List<UnifiedMessageEntity>
 }

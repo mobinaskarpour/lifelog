@@ -85,6 +85,14 @@ class SettingsViewModel
             }
         }
 
+        fun setAppMessageCapture(enabled: Boolean) {
+            viewModelScope.launch {
+                settingsRepository.updateSettings(
+                    _uiState.value.settings.copy(appMessageCaptureEnabled = enabled),
+                )
+            }
+        }
+
         fun exportCsv(outputPath: String) {
             viewModelScope.launch {
                 val content = exportRepository.exportToCsv()

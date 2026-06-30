@@ -85,5 +85,5 @@ val bottomNavItems =
         BottomNavItem("timeline", "Timeline", Icons.Filled.History),
         BottomNavItem("apps", "Apps", Icons.Filled.Apps),
         BottomNavItem("notifications", "Alerts", Icons.Filled.Notifications),
-        BottomNavItem("sms", "Messages", Icons.Filled.Sms),
+        BottomNavItem("messages", "Messages", Icons.Filled.Sms),
     )

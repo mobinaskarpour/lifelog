@@ -6,22 +6,26 @@ import com.lifelog.data.repository.CallRepositoryImpl
 import com.lifelog.data.repository.DashboardRepositoryImpl
 import com.lifelog.data.repository.ExportRepositoryImpl
 import com.lifelog.data.repository.LocationRepositoryImpl
+import com.lifelog.data.repository.MessagesRepositoryImpl
 import com.lifelog.data.repository.NotificationRepositoryImpl
 import com.lifelog.data.repository.ScreenEventRepositoryImpl
 import com.lifelog.data.repository.SettingsRepositoryImpl
 import com.lifelog.data.repository.SmsRepositoryImpl
 import com.lifelog.data.repository.TimelineRepositoryImpl
+import com.lifelog.data.repository.UnifiedMessageRepositoryImpl
 import com.lifelog.domain.repository.AppUsageRepository
 import com.lifelog.domain.repository.BatteryRepository
 import com.lifelog.domain.repository.CallRepository
 import com.lifelog.domain.repository.DashboardRepository
 import com.lifelog.domain.repository.ExportRepository
 import com.lifelog.domain.repository.LocationRepository
+import com.lifelog.domain.repository.MessagesRepository
 import com.lifelog.domain.repository.NotificationRepository
 import com.lifelog.domain.repository.ScreenEventRepository
 import com.lifelog.domain.repository.SettingsRepository
 import com.lifelog.domain.repository.SmsRepository
 import com.lifelog.domain.repository.TimelineRepository
+import com.lifelog.domain.repository.UnifiedMessageRepository
 import com.lifelog.domain.usecase.CleanupOldLogsUseCase
 import com.lifelog.domain.usecase.GetDashboardStatsUseCase
 import com.lifelog.domain.usecase.SearchLogsUseCase
@@ -49,6 +53,12 @@ abstract class RepositoryModule {
 
     @Binds @Singleton
     abstract fun bindSmsRepository(impl: SmsRepositoryImpl): SmsRepository
+
+    @Binds @Singleton
+    abstract fun bindUnifiedMessageRepository(impl: UnifiedMessageRepositoryImpl): UnifiedMessageRepository
+
+    @Binds @Singleton
+    abstract fun bindMessagesRepository(impl: MessagesRepositoryImpl): MessagesRepository
 
     @Binds @Singleton
     abstract fun bindLocationRepository(impl: LocationRepositoryImpl): LocationRepository
@@ -97,6 +107,7 @@ object UseCaseModule {
         notificationRepository: NotificationRepository,
         callRepository: CallRepository,
         smsRepository: SmsRepository,
+        unifiedMessageRepository: UnifiedMessageRepository,
         locationRepository: LocationRepository,
         batteryRepository: BatteryRepository,
         screenEventRepository: ScreenEventRepository,
@@ -106,6 +117,7 @@ object UseCaseModule {
         notificationRepository,
         callRepository,
         smsRepository,
+        unifiedMessageRepository,
         locationRepository,
         batteryRepository,
         screenEventRepository,

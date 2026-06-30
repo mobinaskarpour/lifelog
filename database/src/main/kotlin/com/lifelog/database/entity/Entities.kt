@@ -109,3 +109,19 @@ data class SmsLogEntity(
     val serviceCenter: String?,
     val person: Long?,
 )
+
+@Entity(
+    tableName = "unified_messages",
+    indices = [Index(value = ["dedupKey"], unique = true)],
+)
+data class UnifiedMessageEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val source: String,
+    val packageName: String,
+    val sender: String,
+    val text: String,
+    val timestamp: Long,
+    val capturedAt: Long,
+    val rawNodesJson: String?,
+    val dedupKey: String,
+)

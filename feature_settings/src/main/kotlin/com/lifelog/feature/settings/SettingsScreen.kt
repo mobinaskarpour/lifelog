@@ -132,6 +132,11 @@ fun SettingsScreen(
                     checked = uiState.settings.notificationTrackingEnabled,
                     onCheckedChange = viewModel::setNotificationTracking,
                 )
+                SettingsSwitch(
+                    label = "App Message Capture",
+                    checked = uiState.settings.appMessageCaptureEnabled,
+                    onCheckedChange = viewModel::setAppMessageCapture,
+                )
             }
 
             SectionHeader("Data Management")

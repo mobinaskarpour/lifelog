@@ -38,6 +38,7 @@ class SettingsDataStore
             val MONITORING_ENABLED = booleanPreferencesKey("monitoring_enabled")
             val MONITORING_STARTED_AT = longPreferencesKey("monitoring_started_at")
             val LAST_OPENED_ROUTE = stringPreferencesKey("last_opened_route")
+            val APP_MESSAGE_CAPTURE = booleanPreferencesKey("app_message_capture")
         }
 
         val settings: Flow<AppSettings> =
@@ -54,6 +55,7 @@ class SettingsDataStore
                     monitoringEnabled = prefs[Keys.MONITORING_ENABLED] ?: true,
                     monitoringStartedAt = prefs[Keys.MONITORING_STARTED_AT] ?: 0L,
                     lastOpenedRoute = prefs[Keys.LAST_OPENED_ROUTE] ?: "dashboard",
+                    appMessageCaptureEnabled = prefs[Keys.APP_MESSAGE_CAPTURE] ?: true,
                 )
             }
 
@@ -70,6 +72,7 @@ class SettingsDataStore
                 prefs[Keys.MONITORING_ENABLED] = settings.monitoringEnabled
                 prefs[Keys.MONITORING_STARTED_AT] = settings.monitoringStartedAt
                 prefs[Keys.LAST_OPENED_ROUTE] = settings.lastOpenedRoute
+                prefs[Keys.APP_MESSAGE_CAPTURE] = settings.appMessageCaptureEnabled
             }
         }
 

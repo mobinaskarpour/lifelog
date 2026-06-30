@@ -73,4 +73,15 @@ object DateTimeUtils {
             else -> formatDateTime(timestamp)
         }
     }
+
+    fun formatChatDateSeparator(timestamp: Long): String {
+        val todayStart = startOfDay()
+        val yesterdayStart = startOfDay(todayStart - 1)
+        val messageDay = startOfDay(timestamp)
+        return when {
+            messageDay >= todayStart -> "Today"
+            messageDay >= yesterdayStart -> "Yesterday"
+            else -> formatDate(timestamp)
+        }
+    }
 }

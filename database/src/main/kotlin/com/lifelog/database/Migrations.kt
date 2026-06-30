@@ -59,3 +59,28 @@ val MIGRATION_2_3 =
             )
         }
     }
+
+val MIGRATION_3_4 =
+    object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS unified_messages (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    source TEXT NOT NULL,
+                    packageName TEXT NOT NULL,
+                    sender TEXT NOT NULL,
+                    text TEXT NOT NULL,
+                    timestamp INTEGER NOT NULL,
+                    capturedAt INTEGER NOT NULL,
+                    rawNodesJson TEXT,
+                    dedupKey TEXT NOT NULL
+                )
+                """.trimIndent(),
+            )
+            db.execSQL(
+                "CREATE UNIQUE INDEX IF NOT EXISTS index_unified_messages_dedupKey " +
+                    "ON unified_messages(dedupKey)",
+            )
+        }
+    }

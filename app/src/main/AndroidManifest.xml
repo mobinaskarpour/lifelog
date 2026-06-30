@@ -64,7 +64,7 @@
         </service>
 
         <service
-            android:name="com.lifelog.service.LifeLogAccessibilityService"
+            android:name="com.lifelog.service.MessageAccessibilityService"
             android:exported="true"
             android:label="@string/accessibility_service_label"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">

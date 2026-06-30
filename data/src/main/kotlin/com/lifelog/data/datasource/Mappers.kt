@@ -8,6 +8,7 @@ import com.lifelog.database.entity.NotificationLogEntity
 import com.lifelog.database.entity.ScreenEventEntity
 import com.lifelog.database.entity.SmsLogEntity
 import com.lifelog.database.entity.TimelineEventEntity
+import com.lifelog.database.entity.UnifiedMessageEntity
 import com.lifelog.domain.model.AppUsage
 import com.lifelog.domain.model.BatteryLog
 import com.lifelog.domain.model.CallLog
@@ -20,6 +21,7 @@ import com.lifelog.domain.model.SmsMessage
 import com.lifelog.domain.model.SmsMessageType
 import com.lifelog.domain.model.TimelineEvent
 import com.lifelog.domain.model.TimelineEventType
+import com.lifelog.domain.model.UnifiedMessage
 
 fun TimelineEventEntity.toDomainOrNull(): TimelineEvent? {
     val eventType = TimelineEventType.fromString(type) ?: return null
@@ -233,3 +235,29 @@ private fun SmsMessageType.toAndroidType(): Int =
         SmsMessageType.QUEUED -> 6
         SmsMessageType.UNKNOWN -> 0
     }
+
+fun UnifiedMessageEntity.toDomain() =
+    UnifiedMessage(
+        id = id,
+        source = source,
+        packageName = packageName,
+        sender = sender,
+        text = text,
+        timestamp = timestamp,
+        capturedAt = capturedAt,
+        rawNodesJson = rawNodesJson,
+        dedupKey = dedupKey,
+    )
+
+fun UnifiedMessage.toEntity() =
+    UnifiedMessageEntity(
+        id = id,
+        source = source,
+        packageName = packageName,
+        sender = sender,
+        text = text,
+        timestamp = timestamp,
+        capturedAt = capturedAt,
+        rawNodesJson = rawNodesJson,
+        dedupKey = dedupKey,
+    )
